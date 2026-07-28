@@ -416,7 +416,15 @@
     <div class="transcript-box" id="transcript-box" style="display:none;"></div>
     <div id="pronunciation-result"></div>
     <div id="speaking-browser-warning" style="display:none; margin-top:14px;">
-      <div class="tip-box"><strong>⚠️ Aviso:</strong> Seu navegador pode não suportar reconhecimento de voz. Use Google Chrome para melhor experiência.</div>
+      <div class="tip-box">
+        <strong>🔒 Permissão de microfone necessária</strong><br>
+        Para evitar pedidos repetidos, siga estes passos no Chrome:<br>
+        <ol style="margin:8px 0 0 18px; line-height:2;">
+          <li>Clique no ícone de <strong>cadeado 🔒</strong> na barra de endereço</li>
+          <li>Ao lado de <strong>Microfone</strong>, selecione <strong>Permitir</strong></li>
+          <li>Recarregue a página — o microfone ficará sempre ativo neste site</li>
+        </ol>
+      </div>
     </div>
   </div>
 </div>
@@ -915,47 +923,78 @@ const speakingData = {
 
 let currentSpeakTab = 'phrases';
 let currentPhraseIdx = 0;
-let recognition = null;      // single instance, reused forever
+let recognition = null;   // created ONCE, reused for every click — never recreated
 let isListening = false;
 let ttsSpeed = 0.8;
 let micPermissionGranted = false;
-let _micStream = null;       // kept alive so browser never revokes permission
+let _micStream = null;    // kept open so browser permission stays "granted"
 
-// Build (or rebuild) the SpeechRecognition instance without starting it.
-// Called once after permission granted, then again after each natural end.
-function _buildRecognition() {
+// ─────────────────────────────────────────────────────────────────────────────
+// Mic init — runs once on page load.
+//
+// Strategy that eliminates repeat prompts:
+//   1. getUserMedia() is called exactly once → browser shows the dialog once.
+//   2. The returned stream is held open (_micStream) for the entire session.
+//      Browsers only show the prompt again when there is NO active audio track;
+//      keeping it alive locks the permission to "in use" permanently.
+//   3. new SpeechRecognition() is also called exactly once (inside initMic).
+//      Recreating the object is what causes Chrome to re-check permission.
+//      Instead we reuse the same instance: after onend fires the spec allows
+//      calling .start() again on the same object without any permission check.
+// ─────────────────────────────────────────────────────────────────────────────
+(function initMic() {
+  if (!navigator.mediaDevices) return;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) return;
-  recognition = new SR();
-  recognition.lang = 'pt-BR';
-  recognition.interimResults = true;
-  recognition.maxAlternatives = 3;
-  recognition.continuous = false;
 
-  recognition.onresult = e => {
-    let interim = '', final = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) final += e.results[i][0].transcript;
-      else interim += e.results[i][0].transcript;
-    }
-    const box = document.getElementById('transcript-box');
-    if (box) box.innerHTML = final || interim || '<em style="color:var(--muted);">Ouvindo...</em>';
-    if (final) evaluatePronunciation(final.trim());
-  };
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      _micStream = stream;          // ← never stop these tracks
+      micPermissionGranted = true;
 
-  recognition.onerror = e => {
-    // 'aborted' fires on manual stop — not a real error
-    if (e.error !== 'aborted') _setIdleUI();
-    isListening = false;
-    _buildRecognition(); // pre-build next instance silently
-  };
+      // Create the ONE and only SpeechRecognition instance
+      recognition = new SR();
+      recognition.lang = 'pt-BR';
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 3;
+      recognition.continuous = false;
 
-  recognition.onend = () => {
-    isListening = false;
-    _setIdleUI();
-    _buildRecognition(); // pre-build next instance silently — no prompt
-  };
-}
+      recognition.onresult = e => {
+        let interim = '', final = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          if (e.results[i].isFinal) final += e.results[i][0].transcript;
+          else interim += e.results[i][0].transcript;
+        }
+        const box = document.getElementById('transcript-box');
+        if (box) box.innerHTML = final || interim || '<em style="color:var(--muted);">Ouvindo...</em>';
+        if (final) evaluatePronunciation(final.trim());
+      };
+
+      // onerror — reset UI only; do NOT create a new instance
+      recognition.onerror = e => {
+        if (e.error === 'not-allowed') {
+          micPermissionGranted = false;
+          const w = document.getElementById('speaking-browser-warning');
+          if (w) w.style.display = 'block';
+        }
+        isListening = false;
+        _setIdleUI();
+      };
+
+      // onend — reset UI only; the same instance can be .start()-ed again
+      recognition.onend = () => {
+        isListening = false;
+        _setIdleUI();
+      };
+
+      const s = document.getElementById('mic-status');
+      if (s) s.textContent = 'Microfone pronto — clique para falar';
+    })
+    .catch(() => {
+      micPermissionGranted = false;
+      // Warning shown when user visits the speaking section
+    });
+})();
 
 function _setIdleUI() {
   const btn = document.getElementById('mic-btn');
@@ -964,28 +1003,7 @@ function _setIdleUI() {
   if (status) status.textContent = 'Clique para falar';
 }
 
-// ── One-time init on page load ──────────────────────────────────────────────
-// getUserMedia is called ONCE. The stream is kept open (_micStream never
-// stopped) so the browser considers the permission permanently active for
-// this page session — SpeechRecognition.start() will never prompt again.
-(function initMic() {
-  if (!navigator.mediaDevices) return;
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) return;
-  navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(stream => {
-      _micStream = stream;       // hold open — do NOT stop tracks
-      micPermissionGranted = true;
-      _buildRecognition();       // pre-build instance now, ready to .start()
-      const s = document.getElementById('mic-status');
-      if (s) s.textContent = 'Microfone pronto — clique para falar';
-    })
-    .catch(() => {
-      micPermissionGranted = false;
-    });
-})();
-
 function requestMicPermission() {
-  // Called when the speaking page opens — shows feedback if denied
   if (micPermissionGranted) return;
   const warn = document.getElementById('speaking-browser-warning');
   const status = document.getElementById('mic-status');
@@ -994,8 +1012,9 @@ function requestMicPermission() {
     if (status) status.textContent = 'Reconhecimento de voz não suportado — use o Google Chrome';
     return;
   }
+  // Prompt was denied or dismissed — show guidance
   if (warn) warn.style.display = 'block';
-  if (status) status.textContent = 'Acesso ao microfone negado — verifique as permissões do navegador';
+  if (status) status.textContent = 'Permissão de microfone necessária';
 }
 
 function showSpeakingTab(tab, el) {
@@ -1037,19 +1056,20 @@ function toggleRecording() {
 }
 
 function startRecording() {
-  if (!recognition) return;
+  if (!recognition || !micPermissionGranted) return;
   isListening = true;
   document.getElementById('mic-btn').className = 'mic-btn listening';
   document.getElementById('mic-status').textContent = 'Ouvindo... fale agora!';
   const box = document.getElementById('transcript-box');
   box.style.display = 'block';
   box.innerHTML = '<em style="color:var(--muted);">Ouvindo...</em>';
-  try { recognition.start(); } catch(e) { /* already started */ }
+  // Reuse the same instance — .start() after onend requires no permission check
+  try { recognition.start(); } catch(e) {}
 }
 
 function stopRecording() {
   isListening = false;
-  // abort() stops immediately and fires onend → _buildRecognition() re-arms silently
+  // .abort() fires onerror('aborted') then onend — both just reset UI, no new instance
   if (recognition) { try { recognition.abort(); } catch(e){} }
   _setIdleUI();
 }
