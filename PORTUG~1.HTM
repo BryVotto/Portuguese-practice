@@ -915,30 +915,87 @@ const speakingData = {
 
 let currentSpeakTab = 'phrases';
 let currentPhraseIdx = 0;
-let recognition = null;
+let recognition = null;      // single instance, reused forever
 let isListening = false;
 let ttsSpeed = 0.8;
 let micPermissionGranted = false;
-let micPermissionPending = false;
+let _micStream = null;       // kept alive so browser never revokes permission
 
-function requestMicPermission() {
-  if (micPermissionGranted || micPermissionPending) return;
+// Build (or rebuild) the SpeechRecognition instance without starting it.
+// Called once after permission granted, then again after each natural end.
+function _buildRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return;
+  recognition = new SR();
+  recognition.lang = 'pt-BR';
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 3;
+  recognition.continuous = false;
+
+  recognition.onresult = e => {
+    let interim = '', final = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) final += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    const box = document.getElementById('transcript-box');
+    if (box) box.innerHTML = final || interim || '<em style="color:var(--muted);">Ouvindo...</em>';
+    if (final) evaluatePronunciation(final.trim());
+  };
+
+  recognition.onerror = e => {
+    // 'aborted' fires on manual stop — not a real error
+    if (e.error !== 'aborted') _setIdleUI();
+    isListening = false;
+    _buildRecognition(); // pre-build next instance silently
+  };
+
+  recognition.onend = () => {
+    isListening = false;
+    _setIdleUI();
+    _buildRecognition(); // pre-build next instance silently — no prompt
+  };
+}
+
+function _setIdleUI() {
+  const btn = document.getElementById('mic-btn');
+  const status = document.getElementById('mic-status');
+  if (btn) btn.className = 'mic-btn idle';
+  if (status) status.textContent = 'Clique para falar';
+}
+
+// ── One-time init on page load ──────────────────────────────────────────────
+// getUserMedia is called ONCE. The stream is kept open (_micStream never
+// stopped) so the browser considers the permission permanently active for
+// this page session — SpeechRecognition.start() will never prompt again.
+(function initMic() {
+  if (!navigator.mediaDevices) return;
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) return;
-  micPermissionPending = true;
   navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
-      // Stop the tracks immediately — we only needed the permission grant
-      stream.getTracks().forEach(t => t.stop());
+      _micStream = stream;       // hold open — do NOT stop tracks
       micPermissionGranted = true;
-      micPermissionPending = false;
-      document.getElementById('mic-status').textContent = 'Microfone pronto — clique para falar';
-      document.getElementById('mic-btn').style.opacity = '1';
+      _buildRecognition();       // pre-build instance now, ready to .start()
+      const s = document.getElementById('mic-status');
+      if (s) s.textContent = 'Microfone pronto — clique para falar';
     })
     .catch(() => {
-      micPermissionPending = false;
-      document.getElementById('mic-status').textContent = 'Acesso ao microfone negado';
-      document.getElementById('speaking-browser-warning').style.display = 'block';
+      micPermissionGranted = false;
     });
+})();
+
+function requestMicPermission() {
+  // Called when the speaking page opens — shows feedback if denied
+  if (micPermissionGranted) return;
+  const warn = document.getElementById('speaking-browser-warning');
+  const status = document.getElementById('mic-status');
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    if (warn) warn.style.display = 'block';
+    if (status) status.textContent = 'Reconhecimento de voz não suportado — use o Google Chrome';
+    return;
+  }
+  if (warn) warn.style.display = 'block';
+  if (status) status.textContent = 'Acesso ao microfone negado — verifique as permissões do navegador';
 }
 
 function showSpeakingTab(tab, el) {
@@ -971,62 +1028,30 @@ function listenPhrase() {
 }
 
 function toggleRecording() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    document.getElementById('speaking-browser-warning').style.display = 'block';
-    document.getElementById('mic-status').textContent = 'Reconhecimento de voz não suportado';
+  if (!micPermissionGranted) {
+    requestMicPermission();
     return;
   }
   if (isListening) { stopRecording(); return; }
-  // If permission not yet granted, request it first, then start
-  if (!micPermissionGranted) {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(stream => {
-        stream.getTracks().forEach(t => t.stop());
-        micPermissionGranted = true;
-        startRecording();
-      })
-      .catch(() => {
-        document.getElementById('mic-status').textContent = 'Acesso ao microfone negado';
-        document.getElementById('speaking-browser-warning').style.display = 'block';
-      });
-    return;
-  }
   startRecording();
 }
 
 function startRecording() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.lang = 'pt-BR';
-  recognition.interimResults = true;
-  recognition.maxAlternatives = 3;
+  if (!recognition) return;
   isListening = true;
   document.getElementById('mic-btn').className = 'mic-btn listening';
   document.getElementById('mic-status').textContent = 'Ouvindo... fale agora!';
   const box = document.getElementById('transcript-box');
   box.style.display = 'block';
   box.innerHTML = '<em style="color:var(--muted);">Ouvindo...</em>';
-
-  recognition.onresult = e => {
-    let interim = '';
-    let final = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) final += e.results[i][0].transcript;
-      else interim += e.results[i][0].transcript;
-    }
-    box.innerHTML = final || interim || '<em style="color:var(--muted);">Ouvindo...</em>';
-    if (final) evaluatePronunciation(final.trim());
-  };
-  recognition.onerror = () => stopRecording();
-  recognition.onend = () => stopRecording();
-  recognition.start();
+  try { recognition.start(); } catch(e) { /* already started */ }
 }
 
 function stopRecording() {
   isListening = false;
-  if (recognition) { try { recognition.stop(); } catch(e){} }
-  document.getElementById('mic-btn').className = 'mic-btn idle';
-  document.getElementById('mic-status').textContent = 'Clique para falar';
+  // abort() stops immediately and fires onend → _buildRecognition() re-arms silently
+  if (recognition) { try { recognition.abort(); } catch(e){} }
+  _setIdleUI();
 }
 
 function evaluatePronunciation(spoken) {
