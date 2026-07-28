@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aprenda Português Brasileiro</title>
+<style>
+  :root {
+    --green: #009c3b;
+    --yellow: #ffdf00;
+    --blue: #002776;
+    --white: #ffffff;
+    --light: #f4f7f2;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --radius: 14px;
+    --shadow: 0 2px 16px rgba(0,0,0,0.09);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--light); color: var(--text); min-height: 100vh; }
+
+  /* NAV */
+  nav {
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px; height: 56px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  }
+  .nav-logo { color: var(--yellow); font-weight: 800; font-size: 1.15rem; cursor: pointer; letter-spacing: .5px; }
+  .nav-logo span { color: var(--white); }
+  nav ul { list-style: none; display: flex; gap: 6px; }
+  nav ul li a {
+    color: rgba(255,255,255,0.82); text-decoration: none; padding: 6px 13px;
+    border-radius: 8px; font-size: 0.88rem; font-weight: 500; transition: all .2s;
+  }
+  nav ul li a:hover, nav ul li a.active { background: rgba(255,255,255,0.15); color: var(--yellow); }
+
+  /* PAGES */
+  .page { display: none; padding: 36px 24px; max-width: 1000px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* HOME */
+  .hero { text-align: center; padding: 48px 0 32px; }
+  .hero h1 { font-size: 2.4rem; font-weight: 900; color: var(--blue); line-height: 1.2; }
+  .hero h1 span { color: var(--green); }
+  .hero p { color: var(--muted); font-size: 1.05rem; margin: 14px 0 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .flag-stripe { height: 5px; width: 120px; background: linear-gradient(90deg, var(--green) 33%, var(--yellow) 33% 66%, var(--blue) 66%); border-radius: 3px; margin: 0 auto 32px; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+  .nav-card {
+    background: var(--card); border-radius: var(--radius); padding: 28px 20px;
+    text-align: center; cursor: pointer; transition: transform .18s, box-shadow .18s;
+    box-shadow: var(--shadow); border: 2px solid transparent;
+    text-decoration: none; color: var(--text);
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .nav-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.13); border-color: var(--green); }
+  .nav-card .icon { font-size: 2.4rem; }
+  .nav-card h3 { font-size: 1.05rem; font-weight: 700; }
+  .nav-card p { font-size: 0.82rem; color: var(--muted); }
+
+  /* SECTION HEADERS */
+  .section-header { margin-bottom: 28px; }
+  .section-header h2 { font-size: 1.75rem; font-weight: 800; color: var(--blue); }
+  .section-header p { color: var(--muted); margin-top: 6px; }
+  .badge { display: inline-block; background: var(--green); color: white; font-size: 0.72rem; font-weight: 700; padding: 2px 9px; border-radius: 20px; margin-left: 8px; vertical-align: middle; }
+
+  /* CARDS */
+  .card { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 22px; border-radius: 9px; font-weight: 600; font-size: 0.92rem;
+    cursor: pointer; border: none; transition: all .18s;
+  }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:hover { background: #007a2f; }
+  .btn-secondary { background: var(--blue); color: white; }
+  .btn-secondary:hover { background: #001a5c; }
+  .btn-yellow { background: var(--yellow); color: var(--blue); }
+  .btn-yellow:hover { background: #e5c900; }
+  .btn-ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+  .btn-ghost:hover { background: var(--blue); color: white; }
+  .btn-danger { background: #ef4444; color: white; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* QUIZ */
+  .quiz-question { font-size: 1.15rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+  .quiz-options { display: grid; gap: 10px; }
+  .quiz-option {
+    padding: 13px 18px; border-radius: 10px; border: 2px solid var(--border);
+    cursor: pointer; font-size: 0.95rem; transition: all .15s; background: white;
+    text-align: left;
+  }
+  .quiz-option:hover { border-color: var(--green); background: #f0fdf4; }
+  .quiz-option.correct { border-color: var(--green); background: #dcfce7; color: #166534; }
+  .quiz-option.wrong { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+  .quiz-option:disabled { cursor: default; }
+  .quiz-feedback { margin-top: 16px; padding: 13px 16px; border-radius: 9px; font-weight: 500; }
+  .quiz-feedback.correct { background: #dcfce7; color: #166534; }
+  .quiz-feedback.wrong { background: #fef2f2; color: #991b1b; }
+  .quiz-progress { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px; }
+  .quiz-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); transition: background .2s; }
+  .quiz-dot.done { background: var(--green); }
+  .quiz-dot.current { background: var(--yellow); outline: 2px solid var(--blue); }
+  .quiz-score { text-align: center; padding: 32px; }
+  .quiz-score .score-num { font-size: 3.5rem; font-weight: 900; color: var(--green); }
+  .quiz-tabs { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+  .quiz-tab { padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.88rem; border: 2px solid var(--border); background: white; transition: all .15s; }
+  .quiz-tab.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+  /* LECTURE */
+  .lesson-list { display: flex; flex-direction: column; gap: 14px; }
+  .lesson-item {
+    background: white; border-radius: var(--radius); padding: 18px 20px;
+    border: 2px solid var(--border); cursor: pointer; transition: all .18s;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .lesson-item:hover { border-color: var(--green); box-shadow: var(--shadow); }
+  .lesson-item .lesson-info h4 { font-weight: 700; }
+  .lesson-item .lesson-info p { font-size: 0.83rem; color: var(--muted); margin-top: 3px; }
+  .lesson-item .lesson-level { font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .level-beginner { background: #dcfce7; color: #166534; }
+  .level-intermediate { background: #fef9c3; color: #854d0e; }
+  .level-advanced { background: #ede9fe; color: #5b21b6; }
+  .lesson-content { display: none; }
+  .lesson-content.active { display: block; }
+  .lesson-content h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 16px; color: var(--blue); }
+  .lesson-content p { line-height: 1.8; margin-bottom: 14px; }
+  .vocab-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  .vocab-table th { background: var(--blue); color: white; padding: 10px 14px; text-align: left; font-size: 0.88rem; }
+  .vocab-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .vocab-table tr:nth-child(even) td { background: #f9fafb; }
+  .vocab-table tr:hover td { background: #f0fdf4; }
+  .example-box { background: #f0fdf4; border-left: 4px solid var(--green); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-style: italic; }
+  .example-box .pt { font-weight: 600; color: var(--blue); }
+  .example-box .en { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
+  .tip-box { background: #fefce8; border-left: 4px solid var(--yellow); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+  .tip-box strong { color: #854d0e; }
+
+  /* WRITING */
+  .writing-exercise { margin-bottom: 24px; }
+  .writing-exercise label { font-weight: 600; display: block; margin-bottom: 8px; }
+  .writing-exercise textarea {
+    width: 100%; padding: 13px; border-radius: 9px; border: 2px solid var(--border);
+    font-size: 0.95rem; font-family: inherit; resize: vertical; min-height: 100px;
+    transition: border .15s; outline: none;
+  }
+  .writing-exercise textarea:focus { border-color: var(--green); }
+  .writing-prompt { background: #eff6ff; border-left: 4px solid var(--blue); padding: 14px 18px; border-radius: 0 9px 9px 0; margin-bottom: 16px; }
+  .writing-prompt p { font-weight: 600; color: var(--blue); }
+  .writing-prompt .hint { font-size: 0.85rem; color: var(--muted); margin-top: 5px; }
+  .fill-blank { display: inline-block; border-bottom: 2px solid var(--blue); min-width: 80px; text-align: center; margin: 0 4px; padding: 2px 6px; }
+  .fill-input {
+    border: none; border-bottom: 2px solid var(--blue); outline: none; background: transparent;
+    font-size: 1rem; font-family: inherit; min-width: 80px; text-align: center; padding: 2px 4px;
+  }
+  .fill-input.correct { border-color: var(--green); color: var(--green); }
+  .fill-input.wrong { border-color: #ef4444; color: #ef4444; }
+
+  /* SPEAKING */
+  .mic-container { text-align: center; padding: 32px 0; }
+  .mic-btn {
+    width: 96px; height: 96px; border-radius: 50%; border: none; cursor: pointer;
+    font-size: 2.2rem; display: inline-flex; align-items: center; justify-content: center;
+    transition: all .2s; box-shadow: var(--shadow);
+  }
+  .mic-btn.idle { background: var(--blue); color: white; }
+  .mic-btn.listening { background: #ef4444; color: white; animation: pulse 1.2s infinite; }
+  .mic-btn.idle:hover { transform: scale(1.07); }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+    50% { box-shadow: 0 0 0 18px rgba(239,68,68,0); }
+  }
+  .mic-status { margin-top: 14px; font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+  .transcript-box { background: white; border-radius: 10px; border: 2px solid var(--border); padding: 16px; min-height: 60px; font-size: 1rem; margin-top: 16px; }
+  .speak-phrase { font-size: 1.3rem; font-weight: 700; color: var(--blue); text-align: center; margin-bottom: 8px; }
+  .speak-translation { font-size: 0.9rem; color: var(--muted); text-align: center; margin-bottom: 24px; }
+  .pronunciation-result { margin-top: 18px; padding: 16px; border-radius: 10px; }
+  .pronunciation-result.good { background: #dcfce7; border: 2px solid var(--green); }
+  .pronunciation-result.fair { background: #fef9c3; border: 2px solid var(--yellow); }
+  .pronunciation-result.poor { background: #fef2f2; border: 2px solid #ef4444; }
+  .score-bar-container { margin-top: 12px; }
+  .score-bar-label { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 5px; }
+  .score-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; transition: width .6s; }
+  .word-by-word { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .word-chip { padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+  .word-chip.ok { background: #dcfce7; color: #166534; }
+  .word-chip.miss { background: #fef2f2; color: #991b1b; }
+
+  /* READING / STORIES */
+  .story-card {
+    background: white; border-radius: var(--radius); padding: 20px;
+    border: 2px solid var(--border); cursor: pointer; transition: all .18s; margin-bottom: 14px;
+  }
+  .story-card:hover { border-color: var(--green); box-shadow: var(--shadow); }
+  .story-card h4 { font-weight: 700; font-size: 1.05rem; }
+  .story-card .meta { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+  .story-reader { display: none; }
+  .story-reader.active { display: block; }
+  .story-text { line-height: 2.2; font-size: 1.05rem; }
+  .story-text .word-span { cursor: pointer; padding: 1px 2px; border-radius: 3px; transition: background .15s; }
+  .story-text .word-span:hover { background: #fef9c3; }
+  .story-text .word-span.highlighted { background: var(--yellow); }
+  .audio-controls { display: flex; align-items: center; gap: 12px; background: var(--light); padding: 14px 18px; border-radius: 10px; margin: 16px 0; flex-wrap: wrap; }
+  .speed-btn { padding: 5px 12px; border-radius: 6px; border: 2px solid var(--border); background: white; cursor: pointer; font-weight: 600; font-size: 0.82rem; transition: all .15s; }
+  .speed-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+  .word-popup {
+    position: fixed; background: var(--blue); color: white; padding: 10px 16px;
+    border-radius: 10px; font-size: 0.88rem; z-index: 999; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.22); display: none; max-width: 220px;
+  }
+  .word-popup strong { display: block; font-size: 1rem; }
+
+  /* GRAMMAR */
+  .grammar-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .grammar-tab { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.87rem; border: 2px solid var(--border); background: white; transition: all .15s; }
+  .grammar-tab.active { background: var(--blue); color: white; border-color: var(--blue); }
+  .grammar-section { display: none; }
+  .grammar-section.active { display: block; }
+  .grammar-section h3 { font-size: 1.2rem; font-weight: 800; color: var(--blue); margin: 20px 0 10px; }
+  .grammar-section h3:first-child { margin-top: 0; }
+  .grammar-section p { line-height: 1.8; margin-bottom: 12px; }
+  .grammar-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 0.9rem; }
+  .grammar-table th { background: var(--blue); color: white; padding: 9px 13px; text-align: left; }
+  .grammar-table td { padding: 8px 13px; border-bottom: 1px solid var(--border); }
+  .grammar-table tr:nth-child(even) td { background: #f9fafb; }
+  .highlight { color: var(--green); font-weight: 700; }
+  .rule-box { background: #eff6ff; border: 2px solid var(--blue); border-radius: 10px; padding: 14px 18px; margin: 12px 0; }
+  .rule-box .rule-title { font-weight: 800; color: var(--blue); margin-bottom: 6px; }
+
+  /* BACK BUTTON */
+  .back-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--blue); cursor: pointer; font-weight: 600; margin-bottom: 22px; font-size: 0.9rem; padding: 6px 0; background: none; border: none; }
+  .back-btn:hover { color: var(--green); }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    nav ul { display: none; }
+    .hero h1 { font-size: 1.7rem; }
+    .card-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* TTS highlight */
+  .tts-active { background: #fef9c3 !important; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">🇧🇷 <span>Aprenda</span> Português</div>
+  <ul>
+    <li><a href="#" onclick="showPage('home')" id="nav-home" class="active">Início</a></li>
+    <li><a href="#" onclick="showPage('quiz')" id="nav-quiz">Quiz</a></li>
+    <li><a href="#" onclick="showPage('lecture')" id="nav-lecture">Aulas</a></li>
+    <li><a href="#" onclick="showPage('writing')" id="nav-writing">Escrita</a></li>
+    <li><a href="#" onclick="showPage('speaking')" id="nav-speaking">Fala</a></li>
+    <li><a href="#" onclick="showPage('reading')" id="nav-reading">Leitura</a></li>
+    <li><a href="#" onclick="showPage('grammar')" id="nav-grammar">Gramática</a></li>
+  </ul>
+</nav>
+
+<!-- WORD POPUP -->
+<div class="word-popup" id="wordPopup"></div>
+
+<!-- ========== HOME ========== -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="flag-stripe"></div>
+    <h1>Aprenda <span>Português</span> Brasileiro</h1>
+    <p>Explore quizzes, aulas, escrita, conversação e muito mais. Mergulhe na língua e cultura do Brasil!</p>
+  </div>
+  <div class="card-grid">
+    <div class="nav-card" onclick="showPage('quiz')">
+      <div class="icon">🧩</div>
+      <h3>Quiz</h3>
+      <p>Teste seu vocabulário e gramática com exercícios interativos</p>
+    </div>
+    <div class="nav-card" onclick="showPage('lecture')">
+      <div class="icon">📖</div>
+      <h3>Aulas</h3>
+      <p>Lições estruturadas sobre vocabulário, frases e cultura</p>
+    </div>
+    <div class="nav-card" onclick="showPage('writing')">
+      <div class="icon">✍️</div>
+      <h3>Escrita</h3>
+      <p>Pratique completar frases e redações em português</p>
+    </div>
+    <div class="nav-card" onclick="showPage('speaking')">
+      <div class="icon">🎙️</div>
+      <h3>Fala</h3>
+      <p>Pratique pronúncia com reconhecimento de voz em tempo real</p>
+    </div>
+    <div class="nav-card" onclick="showPage('reading')">
+      <div class="icon">📚</div>
+      <h3>Leitura</h3>
+      <p>Histórias brasileiras com áudio para praticar pronúncia</p>
+    </div>
+    <div class="nav-card" onclick="showPage('grammar')">
+      <div class="icon">📐</div>
+      <h3>Gramática</h3>
+      <p>Regras gramaticais completas com exemplos práticos</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== QUIZ ========== -->
+<div id="page-quiz" class="page">
+  <div class="section-header">
+    <h2>🧩 Quiz <span class="badge" id="quiz-badge">Vocabulário</span></h2>
+    <p>Teste seus conhecimentos de português brasileiro</p>
+  </div>
+  <div class="quiz-tabs">
+    <div class="quiz-tab active" onclick="loadQuiz('vocab', this)">Vocabulário</div>
+    <div class="quiz-tab" onclick="loadQuiz('phrases', this)">Frases</div>
+    <div class="quiz-tab" onclick="loadQuiz('verbs', this)">Verbos</div>
+    <div class="quiz-tab" onclick="loadQuiz('numbers', this)">Números</div>
+  </div>
+  <div class="card" id="quiz-container">
+    <!-- dynamically rendered -->
+  </div>
+</div>
+
+<!-- ========== LECTURE ========== -->
+<div id="page-lecture" class="page">
+  <div class="section-header">
+    <h2>📖 Aulas</h2>
+    <p>Lições estruturadas para todos os níveis</p>
+  </div>
+  <div id="lesson-list-view">
+    <div class="lesson-list" id="lesson-list"></div>
+  </div>
+  <div id="lesson-detail-view" style="display:none;">
+    <button class="back-btn" onclick="showLessonList()">← Voltar às Aulas</button>
+    <div class="card" id="lesson-content-area"></div>
+  </div>
+</div>
+
+<!-- ========== WRITING ========== -->
+<div id="page-writing" class="page">
+  <div class="section-header">
+    <h2>✍️ Prática de Escrita</h2>
+    <p>Complete exercícios e escreva em português</p>
+  </div>
+  <div class="quiz-tabs">
+    <div class="quiz-tab active" onclick="showWritingTab('fill', this)">Complete as Frases</div>
+    <div class="quiz-tab" onclick="showWritingTab('free', this)">Redação Livre</div>
+    <div class="quiz-tab" onclick="showWritingTab('translate', this)">Tradução</div>
+  </div>
+  <div id="writing-fill" class="card">
+    <h3 style="margin-bottom:18px; color:var(--blue);">Complete as frases com a palavra correta</h3>
+    <div id="fill-exercises"></div>
+    <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="checkFill()">✓ Verificar</button>
+      <button class="btn btn-ghost" onclick="resetFill()">↺ Reiniciar</button>
+    </div>
+    <div id="fill-result" style="margin-top:14px;"></div>
+  </div>
+  <div id="writing-free" class="card" style="display:none;">
+    <div class="writing-prompt">
+      <p id="free-prompt-text"></p>
+      <div class="hint" id="free-prompt-hint"></div>
+    </div>
+    <div class="writing-exercise">
+      <label>Escreva sua resposta em português:</label>
+      <textarea id="free-writing-area" placeholder="Escreva aqui..."></textarea>
+    </div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="checkFreeWriting()">✓ Avaliar Escrita</button>
+      <button class="btn btn-ghost" onclick="nextFreePrompt()">→ Próximo Tema</button>
+    </div>
+    <div id="free-result" style="margin-top:14px;"></div>
+  </div>
+  <div id="writing-translate" class="card" style="display:none;">
+    <h3 style="margin-bottom:18px; color:var(--blue);">Traduza para o português</h3>
+    <div id="translate-exercises"></div>
+    <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="checkTranslate()">✓ Verificar</button>
+      <button class="btn btn-ghost" onclick="resetTranslate()">↺ Reiniciar</button>
+    </div>
+    <div id="translate-result" style="margin-top:14px;"></div>
+  </div>
+</div>
+
+<!-- ========== SPEAKING ========== -->
+<div id="page-speaking" class="page">
+  <div class="section-header">
+    <h2>🎙️ Prática de Fala</h2>
+    <p>Fale em português e receba correções de pronúncia</p>
+  </div>
+  <div class="quiz-tabs">
+    <div class="quiz-tab active" onclick="showSpeakingTab('phrases', this)">Frases</div>
+    <div class="quiz-tab" onclick="showSpeakingTab('sentences', this)">Sentenças</div>
+    <div class="quiz-tab" onclick="showSpeakingTab('tongue', this)">Trava-língua</div>
+  </div>
+  <div class="card" id="speaking-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+      <div>
+        <div class="speak-phrase" id="speak-phrase">Olá, tudo bem?</div>
+        <div class="speak-translation" id="speak-translation">Hello, how are you?</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" onclick="prevPhrase()">←</button>
+        <button class="btn btn-secondary" onclick="listenPhrase()">🔊 Ouvir</button>
+        <button class="btn btn-ghost" onclick="nextPhrase()">→</button>
+      </div>
+    </div>
+    <div class="mic-container">
+      <button class="mic-btn idle" id="mic-btn" onclick="toggleRecording()">🎤</button>
+      <div class="mic-status" id="mic-status">Clique para falar</div>
+    </div>
+    <div class="transcript-box" id="transcript-box" style="display:none;"></div>
+    <div id="pronunciation-result"></div>
+    <div id="speaking-browser-warning" style="display:none; margin-top:14px;">
+      <div class="tip-box"><strong>⚠️ Aviso:</strong> Seu navegador pode não suportar reconhecimento de voz. Use Google Chrome para melhor experiência.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== READING ========== -->
+<div id="page-reading" class="page">
+  <div class="section-header">
+    <h2>📚 Histórias Brasileiras</h2>
+    <p>Leia e ouça histórias do folclore e literatura brasileira</p>
+  </div>
+  <div id="story-list-view">
+    <div id="story-list"></div>
+  </div>
+  <div id="story-detail-view" style="display:none;">
+    <button class="back-btn" onclick="showStoryList()">← Voltar às Histórias</button>
+    <div class="card">
+      <h3 id="story-title" style="font-size:1.4rem; font-weight:800; color:var(--blue); margin-bottom:6px;"></h3>
+      <div id="story-meta" style="font-size:0.82rem; color:var(--muted); margin-bottom:16px;"></div>
+      <div class="audio-controls">
+        <button class="btn btn-secondary" id="tts-play-btn" onclick="toggleStoryTTS()">▶ Ouvir História</button>
+        <span style="font-size:0.85rem; color:var(--muted);">Velocidade:</span>
+        <button class="speed-btn active" onclick="setSpeed(0.7, this)">Lento</button>
+        <button class="speed-btn" onclick="setSpeed(1.0, this)">Normal</button>
+        <button class="speed-btn" onclick="setSpeed(1.3, this)">Rápido</button>
+      </div>
+      <div class="story-text" id="story-text-content"></div>
+      <div style="margin-top:16px;" id="story-vocab-section">
+        <h4 style="margin-bottom:10px; color:var(--blue);">📝 Vocabulário da História</h4>
+        <table class="vocab-table" id="story-vocab-table"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== GRAMMAR ========== -->
+<div id="page-grammar" class="page">
+  <div class="section-header">
+    <h2>📐 Regras Gramaticais</h2>
+    <p>Aprenda a estrutura do português brasileiro</p>
+  </div>
+  <div class="grammar-tabs">
+    <div class="grammar-tab active" onclick="showGrammarTab('articles', this)">Artigos</div>
+    <div class="grammar-tab" onclick="showGrammarTab('nouns', this)">Substantivos</div>
+    <div class="grammar-tab" onclick="showGrammarTab('verbs', this)">Verbos</div>
+    <div class="grammar-tab" onclick="showGrammarTab('pronouns', this)">Pronomes</div>
+    <div class="grammar-tab" onclick="showGrammarTab('adjectives', this)">Adjetivos</div>
+    <div class="grammar-tab" onclick="showGrammarTab('prepositions', this)">Preposições</div>
+    <div class="grammar-tab" onclick="showGrammarTab('tenses', this)">Tempos Verbais</div>
+    <div class="grammar-tab" onclick="showGrammarTab('sentence', this)">Estrutura</div>
+  </div>
+  <div class="card" id="grammar-content"></div>
+</div>
+
+<script>
+// ============================
+// NAVIGATION
+// ============================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav ul li a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const navEl = document.getElementById('nav-' + id);
+  if (navEl) navEl.classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'quiz') loadQuiz('vocab');
+  if (id === 'lecture') renderLessonList();
+  if (id === 'writing') { renderFillExercises(); renderTranslateExercises(); nextFreePrompt(); }
+  if (id === 'reading') renderStoryList();
+  if (id === 'grammar') showGrammarTab('articles');
+  if (id === 'speaking') requestMicPermission();
+}
+
+// ============================
+// QUIZ DATA
+// ============================
+const quizData = {
+  vocab: [
+    { q: 'What does "cachorro" mean?', opts: ['Cat','Dog','Horse','Bird'], a: 1, exp: '"Cachorro" means dog. Example: "O cachorro late." (The dog barks.)' },
+    { q: 'How do you say "good morning" in Portuguese?', opts: ['Boa noite','Boa tarde','Bom dia','Olá'], a: 2, exp: '"Bom dia" means good morning. Used until noon.' },
+    { q: 'What does "água" mean?', opts: ['Fire','Earth','Water','Air'], a: 2, exp: '"Água" means water. It\'s an irregular word with a circumflex accent.' },
+    { q: 'Which word means "to eat"?', opts: ['Beber','Dormir','Correr','Comer'], a: 3, exp: '"Comer" means to eat. "Beber" = drink, "Dormir" = sleep, "Correr" = run.' },
+    { q: 'What does "bonito/a" mean?', opts: ['Ugly','Beautiful','Tall','Small'], a: 1, exp: '"Bonito" (masc.) or "bonita" (fem.) means beautiful or pretty.' },
+    { q: 'How do you say "house" in Portuguese?', opts: ['Escola','Carro','Casa','Mesa'], a: 2, exp: '"Casa" means house. "Escola" = school, "Carro" = car, "Mesa" = table.' },
+    { q: 'What does "obrigado/a" mean?', opts: ['Please','Thank you','Sorry','Excuse me'], a: 1, exp: '"Obrigado" (men say) / "Obrigada" (women say) means thank you.' },
+    { q: 'What does "família" mean?', opts: ['Friend','Family','Party','Love'], a: 1, exp: '"Família" means family. It comes from Latin "familia".' },
+    { q: 'How do you say "tomorrow" in Portuguese?', opts: ['Ontem','Hoje','Amanhã','Agora'], a: 2, exp: '"Amanhã" means tomorrow. "Hoje" = today, "Ontem" = yesterday.' },
+    { q: 'What does "saudade" mean?', opts: ['Joy','Longing/missing someone','Anger','Surprise'], a: 1, exp: '"Saudade" is a uniquely Portuguese word for a deep nostalgic longing for someone or something.' },
+  ],
+  phrases: [
+    { q: 'How do you say "Where is the bathroom?"', opts: ['Onde fica o restaurante?','Onde fica o banheiro?','Quanto custa?','Como você se chama?'], a: 1, exp: '"Onde fica o banheiro?" — "banheiro" means bathroom/restroom.' },
+    { q: 'What does "Tudo bem?" mean?', opts: ['What time is it?','Where are you?','Everything OK?','What\'s your name?'], a: 2, exp: '"Tudo bem?" literally means "Everything well?" — a common informal greeting.' },
+    { q: 'How do you say "I don\'t understand"?', opts: ['Eu não sei','Não falo português','Não entendo','Me ajuda'], a: 2, exp: '"Não entendo" means I don\'t understand. "Não sei" = I don\'t know.' },
+    { q: 'What does "Fala mais devagar, por favor" mean?', opts: ['Speak up please','Speak slower please','Can you repeat?','I need help'], a: 1, exp: '"Fala mais devagar" = speak more slowly. "Devagar" = slowly/slow.' },
+    { q: 'How do you say "How much does it cost?"', opts: ['Qual é o endereço?','Que horas são?','Quanto custa?','Pode me ajudar?'], a: 2, exp: '"Quanto custa?" means how much does it cost? Very useful for shopping!' },
+    { q: 'What does "Com licença" mean?', opts: ['Thank you','Excuse me','I\'m sorry','You\'re welcome'], a: 1, exp: '"Com licença" means excuse me (to pass or get attention). "Desculpa" = sorry.' },
+    { q: 'How do you say "I love Brazil"?', opts: ['Eu odeio o Brasil','Eu adoro o Brasil','Eu moro no Brasil','Eu visito o Brasil'], a: 1, exp: '"Eu adoro o Brasil" — "adoro" from "adorar" means to love/adore.' },
+    { q: 'What does "Boa sorte!" mean?', opts: ['Good night!','Good luck!','Good job!','Good idea!'], a: 1, exp: '"Boa sorte!" means Good luck! "Sorte" = luck/fortune.' },
+  ],
+  verbs: [
+    { q: 'How do you say "I am" (permanent) in Portuguese?', opts: ['Eu estou','Eu sou','Eu tenho','Eu faço'], a: 1, exp: '"Eu sou" uses "ser" for permanent states. "Eu estou" uses "estar" for temporary states.' },
+    { q: 'What is the correct conjugation: "Ela ___ no Brasil" (to live)?', opts: ['moro','mora','moram','moram'], a: 1, exp: '"Ela mora no Brasil" — 3rd person singular of "morar" (to live). Eu moro, Você mora, Ele/Ela mora.' },
+    { q: '"Nós ___ futebol" (to play). Fill in:', opts: ['joga','jogam','jogamos','jogo'], a: 2, exp: '"Nós jogamos futebol" — 1st person plural. Endings: eu jogo, você joga, nós jogamos, eles jogam.' },
+    { q: 'What does "Você tem fome?" mean?', opts: ['Are you cold?','Are you tired?','Are you hungry?','Are you happy?'], a: 2, exp: '"Ter fome" literally means "to have hunger." Brazilian Portuguese uses "ter" for many states.' },
+    { q: 'Which is the correct past tense of "falar" (I spoke)?', opts: ['Eu falarei','Eu falei','Eu falava','Eu falo'], a: 1, exp: '"Eu falei" is simple past (pretérito perfeito). "Falava" is imperfect past.' },
+    { q: '"Ir" means "to go". How do you say "she goes"?', opts: ['ela vou','ela vai','ela vão','ela imos'], a: 1, exp: '"Ela vai" — "ir" is irregular: eu vou, você vai, ele/ela vai, nós vamos, eles vão.' },
+    { q: 'What does "Eu gosto de música" mean?', opts: ['I make music','I study music','I like music','I listen to music'], a: 2, exp: '"Gostar de" means to like. Note: it requires the preposition "de" before the object.' },
+    { q: 'Which sentence uses "estar" correctly?', opts: ['Eu estou brasileiro','Ela está cansada','Nós estamos alto','Ele está médico'], a: 1, exp: '"Ela está cansada" — use "estar" for temporary conditions like tired, happy, sick.' },
+  ],
+  numbers: [
+    { q: 'What is "vinte e cinco"?', opts: ['15','20','25','35'], a: 2, exp: '"Vinte" = 20, "e" = and, "cinco" = 5. So vinte e cinco = 25.' },
+    { q: 'How do you say "one hundred" in Portuguese?', opts: ['Mil','Dez','Cem','Cinquenta'], a: 2, exp: '"Cem" = 100. But note: 101 = "cento e um" (cem changes to cento when combined).' },
+    { q: 'What does "terceiro" mean?', opts: ['First','Second','Third','Fourth'], a: 2, exp: '"Terceiro/a" = third. Ordinals: primeiro, segundo, terceiro, quarto, quinto...' },
+    { q: 'What is "mil"?', opts: ['100','500','1000','10000'], a: 2, exp: '"Mil" = 1,000. "Um milhão" = 1,000,000. "Dois mil" = 2,000.' },
+    { q: 'How do you say "half" or "half past" in Portuguese?', opts: ['Quarto','Meio/Meia','Terço','Dobro'], a: 1, exp: '"Meia" (fem.) or "meio" (masc.) = half. "São duas e meia" = it\'s 2:30.' },
+    { q: 'What is "oitenta"?', opts: ['18','80','800','8000'], a: 1, exp: '"Oitenta" = 80. Numbers: sessenta=60, setenta=70, oitenta=80, noventa=90.' },
+  ]
+};
+
+let currentQuizType = 'vocab';
+let currentQ = 0;
+let quizScore = 0;
+let answered = false;
+
+function loadQuiz(type, tabEl) {
+  currentQuizType = type;
+  currentQ = 0;
+  quizScore = 0;
+  answered = false;
+  if (tabEl) {
+    document.querySelectorAll('.quiz-tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+  }
+  const labels = { vocab:'Vocabulário', phrases:'Frases', verbs:'Verbos', numbers:'Números' };
+  document.getElementById('quiz-badge').textContent = labels[type];
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const data = quizData[currentQuizType];
+  const container = document.getElementById('quiz-container');
+  if (currentQ >= data.length) {
+    const pct = Math.round((quizScore / data.length) * 100);
+    const emoji = pct >= 80 ? '🎉' : pct >= 50 ? '😊' : '📚';
+    container.innerHTML = `
+      <div class="quiz-score">
+        <div style="font-size:3rem;">${emoji}</div>
+        <div class="score-num">${quizScore}/${data.length}</div>
+        <div style="font-size:1.1rem; color:var(--muted); margin:8px 0 24px;">${pct}% de acerto</div>
+        <div style="margin-bottom:20px; font-size:1rem;">${pct>=80?'Excelente! Você domina este tópico!':pct>=50?'Bom trabalho! Continue praticando!':'Continue estudando, você vai melhorar!'}</div>
+        <button class="btn btn-primary" onclick="loadQuiz('${currentQuizType}')">↺ Tentar Novamente</button>
+      </div>`;
+    return;
+  }
+  const q = data[currentQ];
+  const dots = data.map((_, i) => `<div class="quiz-dot ${i < currentQ ? 'done' : i === currentQ ? 'current' : ''}"></div>`).join('');
+  container.innerHTML = `
+    <div class="quiz-progress">${dots}</div>
+    <div style="font-size:0.82rem; color:var(--muted); margin-bottom:12px;">Pergunta ${currentQ+1} de ${data.length}</div>
+    <div class="quiz-question">${q.q}</div>
+    <div class="quiz-options">
+      ${q.opts.map((o, i) => `<button class="quiz-option" onclick="answerQuiz(${i})">${o}</button>`).join('')}
+    </div>
+    <div id="quiz-feedback" style="display:none;"></div>
+    <div id="quiz-next" style="display:none; margin-top:16px;">
+      <button class="btn btn-primary" onclick="nextQuestion()">→ Próxima Pergunta</button>
+    </div>`;
+  answered = false;
+}
+
+function answerQuiz(i) {
+  if (answered) return;
+  answered = true;
+  const q = quizData[currentQuizType][currentQ];
+  const opts = document.querySelectorAll('.quiz-option');
+  opts.forEach(o => o.disabled = true);
+  const correct = i === q.a;
+  if (correct) quizScore++;
+  opts[i].classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) opts[q.a].classList.add('correct');
+  const fb = document.getElementById('quiz-feedback');
+  fb.style.display = 'block';
+  fb.className = `quiz-feedback ${correct ? 'correct' : 'wrong'}`;
+  fb.innerHTML = `${correct ? '✓ Correto!' : '✗ Incorreto.'} ${q.exp}`;
+  document.getElementById('quiz-next').style.display = 'block';
+}
+
+function nextQuestion() { currentQ++; renderQuestion(); }
+
+// ============================
+// LESSONS DATA
+// ============================
+const lessons = [
+  {
+    id: 'greetings', title: 'Saudações e Cumprimentos', level: 'beginner',
+    desc: 'Learn how to greet people in Brazilian Portuguese',
+    content: `
+      <h3>Saudações e Cumprimentos</h3>
+      <p>Greetings are essential in Brazilian culture. Brazilians are warm and expressive — a simple greeting opens every interaction.</p>
+      <table class="vocab-table"><tr><th>Português</th><th>English</th><th>When to Use</th></tr>
+        <tr><td><strong>Bom dia</strong></td><td>Good morning</td><td>Until ~noon</td></tr>
+        <tr><td><strong>Boa tarde</strong></td><td>Good afternoon</td><td>Noon – sunset</td></tr>
+        <tr><td><strong>Boa noite</strong></td><td>Good evening/night</td><td>After sunset</td></tr>
+        <tr><td><strong>Olá / Oi</strong></td><td>Hello / Hi</td><td>Anytime (informal)</td></tr>
+        <tr><td><strong>Tudo bem?</strong></td><td>Everything OK?</td><td>Casual greeting</td></tr>
+        <tr><td><strong>Como vai?</strong></td><td>How's it going?</td><td>Friendly check-in</td></tr>
+        <tr><td><strong>Muito prazer</strong></td><td>Nice to meet you</td><td>First meeting</td></tr>
+        <tr><td><strong>Tchau / Até logo</strong></td><td>Bye / See you</td><td>Farewell</td></tr>
+      </table>
+      <div class="example-box"><div class="pt">— Oi! Tudo bem?<br>— Tudo ótimo, obrigado! E você?</div><div class="en">Hi! Everything good? / Everything great, thanks! And you?</div></div>
+      <div class="tip-box"><strong>💡 Cultural Tip:</strong> In Brazil, it's common to greet with a kiss on the cheek (one kiss in São Paulo, two in Rio!). Between men, a handshake or hug is typical.</div>
+    `
+  },
+  {
+    id: 'numbers', title: 'Números e Contagem', level: 'beginner',
+    desc: 'Master numbers from 0 to one million',
+    content: `
+      <h3>Números — Numbers</h3>
+      <p>Numbers in Portuguese are regular and easy to learn once you know the base words.</p>
+      <table class="vocab-table"><tr><th>Number</th><th>Português</th><th>Number</th><th>Português</th></tr>
+        <tr><td>0</td><td>zero</td><td>10</td><td>dez</td></tr>
+        <tr><td>1</td><td>um/uma</td><td>11</td><td>onze</td></tr>
+        <tr><td>2</td><td>dois/duas</td><td>12</td><td>doze</td></tr>
+        <tr><td>3</td><td>três</td><td>13</td><td>treze</td></tr>
+        <tr><td>4</td><td>quatro</td><td>20</td><td>vinte</td></tr>
+        <tr><td>5</td><td>cinco</td><td>30</td><td>trinta</td></tr>
+        <tr><td>6</td><td>seis</td><td>100</td><td>cem/cento</td></tr>
+        <tr><td>7</td><td>sete</td><td>1.000</td><td>mil</td></tr>
+        <tr><td>8</td><td>oito</td><td>1.000.000</td><td>um milhão</td></tr>
+        <tr><td>9</td><td>nove</td><td></td><td></td></tr>
+      </table>
+      <p>Compound numbers use <strong>e</strong> (and): <em>vinte e três</em> (23), <em>cem e um</em> → <em>cento e um</em> (101).</p>
+      <div class="tip-box"><strong>💡 Note:</strong> In Brazil, a period separates thousands and a comma separates decimals: R$ 1.500,00 = 1,500.00 reais.</div>
+    `
+  },
+  {
+    id: 'family', title: 'Família e Relacionamentos', level: 'beginner',
+    desc: 'Learn words for family members and relationships',
+    content: `
+      <h3>Família — Family</h3>
+      <p>Family is central to Brazilian culture. Here are the essential family vocabulary words:</p>
+      <table class="vocab-table"><tr><th>Português</th><th>English</th><th>Português</th><th>English</th></tr>
+        <tr><td>pai</td><td>father</td><td>mãe</td><td>mother</td></tr>
+        <tr><td>irmão</td><td>brother</td><td>irmã</td><td>sister</td></tr>
+        <tr><td>filho</td><td>son</td><td>filha</td><td>daughter</td></tr>
+        <tr><td>avô</td><td>grandfather</td><td>avó</td><td>grandmother</td></tr>
+        <tr><td>tio</td><td>uncle</td><td>tia</td><td>aunt</td></tr>
+        <tr><td>primo</td><td>cousin (m)</td><td>prima</td><td>cousin (f)</td></tr>
+        <tr><td>marido</td><td>husband</td><td>esposa</td><td>wife</td></tr>
+        <tr><td>namorado</td><td>boyfriend</td><td>namorada</td><td>girlfriend</td></tr>
+      </table>
+      <div class="example-box"><div class="pt">Minha família é grande. Tenho dois irmãos e uma irmã.</div><div class="en">My family is big. I have two brothers and one sister.</div></div>
+    `
+  },
+  {
+    id: 'food', title: 'Comida e Bebida Brasileira', level: 'intermediate',
+    desc: 'Discover Brazilian cuisine vocabulary',
+    content: `
+      <h3>Comida Brasileira — Brazilian Food</h3>
+      <p>Brazilian cuisine is rich and varied. Here are key food words and dishes you'll encounter:</p>
+      <table class="vocab-table"><tr><th>Português</th><th>English</th><th>Notes</th></tr>
+        <tr><td>feijoada</td><td>black bean stew</td><td>National dish, served on Wednesdays/Saturdays</td></tr>
+        <tr><td>churrasco</td><td>BBQ</td><td>Grilled meats, a beloved tradition</td></tr>
+        <tr><td>pão de queijo</td><td>cheese bread</td><td>Chewy, gluten-free snack from Minas Gerais</td></tr>
+        <tr><td>coxinha</td><td>chicken croquette</td><td>Teardrop-shaped, very popular street food</td></tr>
+        <tr><td>açaí</td><td>açaí berry bowl</td><td>Thick purple smoothie, topped with granola</td></tr>
+        <tr><td>caipirinha</td><td>lime & cachaça cocktail</td><td>National cocktail</td></tr>
+        <tr><td>arroz e feijão</td><td>rice and beans</td><td>Eaten daily by most Brazilians</td></tr>
+        <tr><td>brigadeiro</td><td>chocolate truffle</td><td>Iconic Brazilian dessert</td></tr>
+      </table>
+      <div class="example-box"><div class="pt">Quero uma caipirinha e um prato de feijoada, por favor.</div><div class="en">I want a caipirinha and a plate of feijoada, please.</div></div>
+    `
+  },
+  {
+    id: 'travel', title: 'Viagem e Turismo', level: 'intermediate',
+    desc: 'Essential phrases for traveling in Brazil',
+    content: `
+      <h3>Viagem — Travel</h3>
+      <p>Brazil is a vast country with incredible diversity. These phrases will help you navigate it.</p>
+      <table class="vocab-table"><tr><th>Português</th><th>English</th></tr>
+        <tr><td>Onde fica...?</td><td>Where is...?</td></tr>
+        <tr><td>Quanto custa a passagem?</td><td>How much is the ticket?</td></tr>
+        <tr><td>Quero ir para...</td><td>I want to go to...</td></tr>
+        <tr><td>Tem quarto disponível?</td><td>Is there a room available?</td></tr>
+        <tr><td>Pode me chamar um Uber?</td><td>Can you call me an Uber?</td></tr>
+        <tr><td>Qual o horário de funcionamento?</td><td>What are the opening hours?</td></tr>
+        <tr><td>Estou perdido/a</td><td>I am lost</td></tr>
+        <tr><td>Me mostra no mapa?</td><td>Can you show me on the map?</td></tr>
+      </table>
+      <div class="tip-box"><strong>💡 Tip:</strong> In Brazil, Uber and 99 are widely used apps. Many drivers speak only Portuguese, so these phrases are essential!</div>
+    `
+  },
+  {
+    id: 'culture', title: 'Cultura e Expressões Brasileiras', level: 'advanced',
+    desc: 'Idiomatic expressions and cultural nuances',
+    content: `
+      <h3>Expressões Populares — Popular Expressions</h3>
+      <p>Brazilian Portuguese is full of colorful expressions (gírias) that textbooks don't teach you!</p>
+      <table class="vocab-table"><tr><th>Expressão</th><th>Literal</th><th>Meaning</th></tr>
+        <tr><td>Que saudade!</td><td>What longing!</td><td>I miss you/this so much!</td></tr>
+        <tr><td>Não tem jeito</td><td>There's no way</td><td>Nothing can be done</td></tr>
+        <tr><td>Dar um rolê</td><td>To give a roll</td><td>To hang out / go for a walk</td></tr>
+        <tr><td>Ficar de bobeira</td><td>To stay silly</td><td>To do nothing, chill</td></tr>
+        <tr><td>Vai nessa!</td><td>Go in that!</td><td>Go for it! / Let's do it!</td></tr>
+        <tr><td>Tá na mão</td><td>It's in the hand</td><td>It's done / taken care of</td></tr>
+        <tr><td>Essa é boa!</td><td>That's a good one!</td><td>That's funny! / Yeah right!</td></tr>
+        <tr><td>Meu Deus!</td><td>My God!</td><td>Oh my God! (common exclamation)</td></tr>
+        <tr><td>Vamos nessa!</td><td>Let's in that!</td><td>Let's go!</td></tr>
+      </table>
+      <div class="example-box"><div class="pt">— Vamos dar um rolê no parque?<br>— Vai nessa! Tá na mão!</div><div class="en">Wanna hang out in the park? / Let's go! I'm in!</div></div>
+    `
+  }
+];
+
+function renderLessonList() {
+  const list = document.getElementById('lesson-list');
+  list.innerHTML = lessons.map((l, i) => `
+    <div class="lesson-item" onclick="openLesson(${i})">
+      <div class="lesson-info">
+        <h4>${l.title}</h4>
+        <p>${l.desc}</p>
+      </div>
+      <span class="lesson-level level-${l.level}">${l.level === 'beginner' ? 'Iniciante' : l.level === 'intermediate' ? 'Intermediário' : 'Avançado'}</span>
+    </div>`).join('');
+}
+
+function openLesson(i) {
+  document.getElementById('lesson-list-view').style.display = 'none';
+  document.getElementById('lesson-detail-view').style.display = 'block';
+  document.getElementById('lesson-content-area').innerHTML = lessons[i].content;
+}
+
+function showLessonList() {
+  document.getElementById('lesson-list-view').style.display = 'block';
+  document.getElementById('lesson-detail-view').style.display = 'none';
+}
+
+// ============================
+// WRITING
+// ============================
+const fillData = [
+  { sentence: 'Eu ___ no Brasil.', blank: 'moro', hint: 'verb morar (to live), 1st person singular', options: ['mora', 'moro', 'moram'] },
+  { sentence: 'Ela ___ uma professora inteligente.', blank: 'é', hint: 'verb ser (to be), 3rd person singular', options: ['está', 'é', 'tem'] },
+  { sentence: 'Nós ___ café todos os dias.', blank: 'bebemos', hint: 'verb beber (to drink), 1st person plural', options: ['bebe', 'bebemos', 'bebem'] },
+  { sentence: 'Os meninos ___ futebol no parque.', blank: 'jogam', hint: 'verb jogar (to play), 3rd person plural', options: ['joga', 'jogamos', 'jogam'] },
+  { sentence: 'Você ___ fome agora?', blank: 'tem', hint: 'verb ter (to have), 2nd person', options: ['é', 'está', 'tem'] },
+  { sentence: 'O livro ___ em cima da mesa.', blank: 'está', hint: 'verb estar (to be - location), 3rd person', options: ['é', 'está', 'fica'] },
+];
+
+const freePrompts = [
+  { p: 'Descreva sua família.', h: 'Hint: Use "Minha família tem...", "Meu/minha ... se chama..."' },
+  { p: 'Fale sobre sua comida favorita.', h: 'Hint: "Minha comida favorita é...", "Eu gosto muito de..."' },
+  { p: 'Descreva seu dia a dia.', h: 'Hint: Use present tense. "De manhã, eu...", "Depois, eu..."' },
+  { p: 'Escreva sobre o Brasil (o que você sabe ou imagina).', h: 'Hint: "O Brasil é...", "Eu acho que...", "O país tem..."' },
+  { p: 'Apresente-se em português.', h: 'Hint: "Meu nome é...", "Eu sou de...", "Eu gosto de..."' },
+];
+
+const translateData = [
+  { en: 'I have a big family.', pt: 'Eu tenho uma família grande.' },
+  { en: 'She speaks Portuguese very well.', pt: 'Ela fala português muito bem.' },
+  { en: 'We are going to the beach tomorrow.', pt: 'Nós vamos à praia amanhã.' },
+  { en: 'Do you like Brazilian food?', pt: 'Você gosta de comida brasileira?' },
+  { en: 'The weather in Rio is very hot.', pt: 'O tempo no Rio é muito quente.' },
+];
+
+let currentFreePromptIdx = 0;
+
+function renderFillExercises() {
+  document.getElementById('fill-exercises').innerHTML = fillData.map((f, i) => {
+    const parts = f.sentence.split('___');
+    return `<div style="margin-bottom:18px;">
+      <p style="margin-bottom:8px;">${i+1}. ${parts[0]}<input class="fill-input" id="fill-${i}" placeholder="____" autocomplete="off"/>${parts[1]}</p>
+      <p style="font-size:0.8rem; color:var(--muted);">💡 ${f.hint}</p>
+    </div>`;
+  }).join('');
+}
+
+function checkFill() {
+  let correct = 0;
+  fillData.forEach((f, i) => {
+    const inp = document.getElementById(`fill-${i}`);
+    const val = inp.value.trim().toLowerCase();
+    if (val === f.blank.toLowerCase()) { inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  const r = document.getElementById('fill-result');
+  r.innerHTML = `<div class="quiz-feedback ${correct === fillData.length ? 'correct' : 'wrong'}">${correct}/${fillData.length} corretas! ${correct === fillData.length ? '🎉 Perfeito!' : ''}</div>`;
+}
+
+function resetFill() {
+  fillData.forEach((_, i) => {
+    const inp = document.getElementById(`fill-${i}`);
+    inp.value = ''; inp.classList.remove('correct', 'wrong');
+  });
+  document.getElementById('fill-result').innerHTML = '';
+}
+
+function showWritingTab(tab, el) {
+  document.querySelectorAll('#page-writing .quiz-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('writing-fill').style.display = 'none';
+  document.getElementById('writing-free').style.display = 'none';
+  document.getElementById('writing-translate').style.display = 'none';
+  document.getElementById('writing-' + tab).style.display = 'block';
+}
+
+function nextFreePrompt() {
+  document.getElementById('free-prompt-text').textContent = freePrompts[currentFreePromptIdx].p;
+  document.getElementById('free-prompt-hint').textContent = freePrompts[currentFreePromptIdx].h;
+  document.getElementById('free-writing-area').value = '';
+  document.getElementById('free-result').innerHTML = '';
+  currentFreePromptIdx = (currentFreePromptIdx + 1) % freePrompts.length;
+}
+
+function checkFreeWriting() {
+  const text = document.getElementById('free-writing-area').value.trim();
+  if (!text) { document.getElementById('free-result').innerHTML = '<div class="quiz-feedback wrong">Por favor, escreva algo primeiro!</div>'; return; }
+  const wc = text.split(/\s+/).length;
+  const hasPt = /[áéíóúâêôãõçÁÉÍÓÚÂÊÔÃÕÇ]/.test(text) || /\b(eu|você|ele|ela|nós|eles|mas|que|com|para|uma|um)\b/i.test(text);
+  const result = document.getElementById('free-result');
+  result.innerHTML = `<div class="quiz-feedback ${wc >= 10 ? 'correct' : 'wrong'}">
+    📊 Palavras escritas: <strong>${wc}</strong><br>
+    ${hasPt ? '✅ Parece que você usou palavras portuguesas!' : '⚠️ Tente incluir mais palavras em português.'}<br>
+    ${wc < 5 ? '📝 Tente escrever pelo menos 5 palavras!' : wc < 20 ? '👍 Bom começo! Tente expandir mais.' : '🎉 Ótima redação! Continue praticando!'}
+  </div>`;
+}
+
+function renderTranslateExercises() {
+  document.getElementById('translate-exercises').innerHTML = translateData.map((t, i) => `
+    <div style="margin-bottom:20px;">
+      <p style="margin-bottom:8px; font-weight:600;">${i+1}. "${t.en}"</p>
+      <input type="text" class="fill-input" id="trans-${i}" placeholder="Escreva em português..." style="min-width:300px; max-width:100%; text-align:left; padding:8px 12px; border: 2px solid var(--border); border-radius:8px;" autocomplete="off"/>
+    </div>`).join('');
+}
+
+function checkTranslate() {
+  let correct = 0;
+  translateData.forEach((t, i) => {
+    const inp = document.getElementById(`trans-${i}`);
+    const val = inp.value.trim().toLowerCase().replace(/[.,!?]/g, '');
+    const ans = t.pt.toLowerCase().replace(/[.,!?]/g, '');
+    const sim = similarity(val, ans);
+    if (sim > 0.75) { inp.style.borderColor = 'var(--green)'; inp.style.color = 'var(--green)'; correct++; }
+    else { inp.style.borderColor = '#ef4444'; inp.style.color = '#ef4444'; }
+  });
+  document.getElementById('translate-result').innerHTML = `
+    <div class="quiz-feedback ${correct >= 3 ? 'correct' : 'wrong'}">${correct}/${translateData.length} corretas!
+      <div style="margin-top:8px; font-size:0.88rem;">Respostas corretas:<br>${translateData.map(t=>`• ${t.pt}`).join('<br>')}</div>
+    </div>`;
+}
+
+function resetTranslate() {
+  translateData.forEach((_, i) => {
+    const inp = document.getElementById(`trans-${i}`);
+    inp.value = ''; inp.style.borderColor = 'var(--border)'; inp.style.color = 'inherit';
+  });
+  document.getElementById('translate-result').innerHTML = '';
+}
+
+function similarity(a, b) {
+  if (!a || !b) return 0;
+  const aW = new Set(a.split(/\s+/));
+  const bW = new Set(b.split(/\s+/));
+  const inter = [...aW].filter(w => bW.has(w)).length;
+  return inter / Math.max(aW.size, bW.size);
+}
+
+// ============================
+// SPEAKING / PRONUNCIATION
+// ============================
+const speakingData = {
+  phrases: [
+    { pt: 'Olá, tudo bem?', en: 'Hello, how are you?' },
+    { pt: 'Obrigado/a', en: 'Thank you' },
+    { pt: 'Com licença', en: 'Excuse me' },
+    { pt: 'Bom dia!', en: 'Good morning!' },
+    { pt: 'Boa noite.', en: 'Good night.' },
+    { pt: 'Até logo!', en: 'See you later!' },
+    { pt: 'Muito prazer!', en: 'Nice to meet you!' },
+    { pt: 'Não entendo.', en: "I don't understand." },
+  ],
+  sentences: [
+    { pt: 'Eu moro no Brasil.', en: 'I live in Brazil.' },
+    { pt: 'Você fala português?', en: 'Do you speak Portuguese?' },
+    { pt: 'Onde fica o banheiro?', en: 'Where is the bathroom?' },
+    { pt: 'Quanto custa isso?', en: 'How much does this cost?' },
+    { pt: 'Eu gosto muito de churrasco.', en: 'I really like BBQ.' },
+    { pt: 'O Brasil é muito bonito.', en: 'Brazil is very beautiful.' },
+  ],
+  tongue: [
+    { pt: 'O rato roeu a roupa do rei de Roma.', en: 'The rat gnawed the King of Rome\'s clothes.' },
+    { pt: 'Três pratos de trigo para três tigres tristes.', en: 'Three plates of wheat for three sad tigers.' },
+    { pt: 'Sabendo que o sabiá sabia assobiar.', en: 'Knowing that the thrush knew how to whistle.' },
+    { pt: 'Fui à feira, fui à feira, fui à feira.', en: 'I went to the fair, I went to the fair.' },
+  ]
+};
+
+let currentSpeakTab = 'phrases';
+let currentPhraseIdx = 0;
+let recognition = null;
+let isListening = false;
+let ttsSpeed = 0.8;
+let micPermissionGranted = false;
+let micPermissionPending = false;
+
+function requestMicPermission() {
+  if (micPermissionGranted || micPermissionPending) return;
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) return;
+  micPermissionPending = true;
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      // Stop the tracks immediately — we only needed the permission grant
+      stream.getTracks().forEach(t => t.stop());
+      micPermissionGranted = true;
+      micPermissionPending = false;
+      document.getElementById('mic-status').textContent = 'Microfone pronto — clique para falar';
+      document.getElementById('mic-btn').style.opacity = '1';
+    })
+    .catch(() => {
+      micPermissionPending = false;
+      document.getElementById('mic-status').textContent = 'Acesso ao microfone negado';
+      document.getElementById('speaking-browser-warning').style.display = 'block';
+    });
+}
+
+function showSpeakingTab(tab, el) {
+  document.querySelectorAll('#page-speaking .quiz-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentSpeakTab = tab;
+  currentPhraseIdx = 0;
+  updateSpeakPhrase();
+}
+
+function updateSpeakPhrase() {
+  const data = speakingData[currentSpeakTab];
+  const item = data[currentPhraseIdx % data.length];
+  document.getElementById('speak-phrase').textContent = item.pt;
+  document.getElementById('speak-translation').textContent = item.en;
+  document.getElementById('transcript-box').style.display = 'none';
+  document.getElementById('pronunciation-result').innerHTML = '';
+}
+
+function nextPhrase() { currentPhraseIdx++; updateSpeakPhrase(); }
+function prevPhrase() { currentPhraseIdx = Math.max(0, currentPhraseIdx - 1); updateSpeakPhrase(); }
+
+function listenPhrase() {
+  const phrase = document.getElementById('speak-phrase').textContent;
+  const u = new SpeechSynthesisUtterance(phrase);
+  u.lang = 'pt-BR';
+  u.rate = ttsSpeed;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function toggleRecording() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    document.getElementById('speaking-browser-warning').style.display = 'block';
+    document.getElementById('mic-status').textContent = 'Reconhecimento de voz não suportado';
+    return;
+  }
+  if (isListening) { stopRecording(); return; }
+  // If permission not yet granted, request it first, then start
+  if (!micPermissionGranted) {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        stream.getTracks().forEach(t => t.stop());
+        micPermissionGranted = true;
+        startRecording();
+      })
+      .catch(() => {
+        document.getElementById('mic-status').textContent = 'Acesso ao microfone negado';
+        document.getElementById('speaking-browser-warning').style.display = 'block';
+      });
+    return;
+  }
+  startRecording();
+}
+
+function startRecording() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'pt-BR';
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 3;
+  isListening = true;
+  document.getElementById('mic-btn').className = 'mic-btn listening';
+  document.getElementById('mic-status').textContent = 'Ouvindo... fale agora!';
+  const box = document.getElementById('transcript-box');
+  box.style.display = 'block';
+  box.innerHTML = '<em style="color:var(--muted);">Ouvindo...</em>';
+
+  recognition.onresult = e => {
+    let interim = '';
+    let final = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) final += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    box.innerHTML = final || interim || '<em style="color:var(--muted);">Ouvindo...</em>';
+    if (final) evaluatePronunciation(final.trim());
+  };
+  recognition.onerror = () => stopRecording();
+  recognition.onend = () => stopRecording();
+  recognition.start();
+}
+
+function stopRecording() {
+  isListening = false;
+  if (recognition) { try { recognition.stop(); } catch(e){} }
+  document.getElementById('mic-btn').className = 'mic-btn idle';
+  document.getElementById('mic-status').textContent = 'Clique para falar';
+}
+
+function evaluatePronunciation(spoken) {
+  const target = document.getElementById('speak-phrase').textContent;
+  const spokenW = spoken.toLowerCase().replace(/[.,!?]/g,'').split(/\s+/);
+  const targetW = target.toLowerCase().replace(/[.,!?]/g,'').split(/\s+/);
+  let matches = 0;
+  const wordResults = targetW.map(w => {
+    const hit = spokenW.some(sw => levenshtein(sw, w) <= 1);
+    if (hit) matches++;
+    return { word: w, ok: hit };
+  });
+  const score = Math.round((matches / targetW.length) * 100);
+  const cls = score >= 80 ? 'good' : score >= 50 ? 'fair' : 'poor';
+  const emoji = score >= 80 ? '🎉' : score >= 50 ? '👍' : '💪';
+  const msg = score >= 80 ? 'Excelente pronúncia!' : score >= 50 ? 'Bom! Continue praticando.' : 'Continue praticando! Ouça o áudio e tente de novo.';
+  const chips = wordResults.map(r => `<span class="word-chip ${r.ok ? 'ok' : 'miss'}">${r.word}</span>`).join('');
+  document.getElementById('pronunciation-result').innerHTML = `
+    <div class="pronunciation-result ${cls}">
+      <strong>${emoji} ${msg}</strong>
+      <div class="score-bar-container">
+        <div class="score-bar-label"><span>Precisão</span><span>${score}%</span></div>
+        <div class="score-bar"><div class="score-bar-fill" style="width:${score}%; background:${score>=80?'var(--green)':score>=50?'var(--yellow)':'#ef4444'};"></div></div>
+      </div>
+      <div style="margin-top:10px; font-size:0.85rem; color:#555;">Você disse: <em>"${spoken}"</em></div>
+      <div class="word-by-word">${chips}</div>
+      <div style="font-size:0.8rem; margin-top:8px; color:#666;">🟢 Reconhecido &nbsp; 🔴 Não reconhecido</div>
+    </div>`;
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m+1}, (_, i) => Array.from({length: n+1}, (_, j) => i===0?j:j===0?i:0));
+  for (let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+// ============================
+// READING / STORIES
+// ============================
+const stories = [
+  {
+    id: 'saci',
+    title: 'O Saci-Pererê',
+    meta: 'Folclore Brasileiro | Nível: Intermediário | ~200 palavras',
+    text: `Era uma vez, nas matas do Brasil, um ser muito especial chamado Saci-Pererê. Ele era um menino pequeno, de pele escura, que usava um gorro vermelho mágico na cabeça. O Saci tinha apenas uma perna e fumava um cachimbo.
+
+O Saci adorava pregar peças nas pessoas. Ele amarrava as crinas dos cavalos, azedava o leite, escondia objetos das casas e assustava os caminhantes nas estradas escuras.
+
+Para capturar o Saci, segundo a lenda, era preciso jogar uma peneira no chão quando ele aparecia em forma de redemoinho. O Saci ficaria preso tentando contar os buraquinhos da peneira. Depois, era preciso tirar o seu gorro vermelho – sem o gorro, o Saci perdia seus poderes mágicos.
+
+Mas nem todo mundo queria capturar o Saci. Muitas crianças adoravam ouvir as histórias sobre ele e ficavam esperando na janela para ver o redemoinho passar. O Saci faz parte do coração do Brasil e representa a alegria, a malandragem e o espírito livre do povo brasileiro.`,
+    vocab: [
+      ['ser', 'being/creature'], ['pele', 'skin'], ['gorro', 'cap/hat'], ['perna', 'leg'],
+      ['pregar peças', 'to play tricks'], ['crinas', 'horse mane'], ['azedar', 'to sour'],
+      ['peneira', 'sieve'], ['redemoinho', 'whirlwind'], ['malandragem', 'craftiness/cunning']
+    ]
+  },
+  {
+    id: 'iara',
+    title: 'Iara, a Sereia do Rio',
+    meta: 'Folclore Brasileiro | Nível: Intermediário | ~200 palavras',
+    text: `Nas profundezas dos grandes rios da Amazônia, vivia uma linda criatura chamada Iara. Ela tinha o corpo de uma mulher linda, com longos cabelos negros, e a cauda de um peixe. Iara era a rainha das águas.
+
+Conta a lenda que Iara ficava sentada nas pedras às margens dos rios, penteando seus cabelos e cantando músicas tão belas que os homens ficavam encantados. Quando ouviam o canto de Iara, os pescadores largavam seus barcos e nadavam em direção à voz, sem conseguir resistir.
+
+Aqueles que chegavam perto de Iara eram levados para o fundo das águas para viver com ela para sempre. Por isso, os pescadores da Amazônia evitavam nadar nos rios à noite e ficavam atentos a qualquer canto misterioso que vinha da água.
+
+Iara representa a beleza perigosa da natureza amazônica. Ela é símbolo do respeito que o povo indígena e caboclo tinha pela força dos rios. Até hoje, muitos acreditam que Iara ainda mora nos rios profundos do Brasil, esperando por novos visitantes.`,
+    vocab: [
+      ['profundezas', 'depths'], ['cauda', 'tail (fish)'], ['pedras', 'rocks/stones'],
+      ['penteando', 'combing'], ['pescadores', 'fishermen'], ['encantados', 'enchanted/spellbound'],
+      ['resistir', 'to resist'], ['fundo', 'bottom/depths'], ['caboclo', 'mixed-heritage river person'],
+      ['símbolo', 'symbol']
+    ]
+  },
+  {
+    id: 'curupira',
+    title: 'O Curupira, Guardião da Floresta',
+    meta: 'Folclore Brasileiro | Nível: Avançado | ~220 palavras',
+    text: `Nas florestas densas do Brasil, há um guardião poderoso que protege os animais e as árvores dos caçadores ruins. Ele se chama Curupira.
+
+O Curupira parece uma criança, mas seus pés são virados para trás! Isso faz com que qualquer pessoa que tente seguir suas pegadas fique completamente perdida na floresta. Quem entra na mata para caçar por ganância e destruição acaba sendo enganado pelo Curupira, que cria sons falsos, apaga trilhas e faz os caçadores andarem em círculos até ficarem exaustos e desorientados.
+
+Mas o Curupira não é cruel com todos. Ele respeita os índios e caboclos que caçam apenas para se alimentar, sem desperdiçar a natureza. Para esses, o Curupira pode até ajudar, mostrando onde há caça e protegendo-os dos perigos da floresta.
+
+Os povos indígenas contam que para se proteger do Curupira, era preciso oferecer fumo ou cachaça como presente. Assim, o espírito ficava satisfeito e deixava o caçador passar.
+
+O Curupira é um dos personagens mais importantes do folclore brasileiro. Sua história nos ensina sobre o respeito à natureza e a necessidade de preservar as florestas — uma mensagem ainda mais relevante hoje.`,
+    vocab: [
+      ['guardião', 'guardian'], ['caçadores', 'hunters'], ['pés virados', 'feet turned backwards'],
+      ['pegadas', 'footprints/tracks'], ['ganância', 'greed'], ['trilhas', 'trails'],
+      ['exaustos', 'exhausted'], ['desperdiçar', 'to waste'], ['fumo', 'tobacco'],
+      ['preservar', 'to preserve/protect']
+    ]
+  },
+  {
+    id: 'menina',
+    title: 'A Menina e o Boto',
+    meta: 'Folclore Amazônico | Nível: Intermediário | ~200 palavras',
+    text: `Nas festas juninas das cidades ribeirinhas da Amazônia, sempre aparece um homem misterioso, elegante, usando roupas brancas e um chapéu branco. Ele dança, conquista corações e desaparece antes do amanhecer. Esse homem é o Boto.
+
+Segundo a lenda amazônica, o Boto é um golfinho rosa que, nas noites de festa, se transforma em um jovem bonito e sedutor. Ele sai das águas do rio, vai às festas, dança com as moças mais bonitas e as encanta com sua conversa e seus olhos hipnóticos.
+
+Conta a lenda que o Boto sempre usa chapéu para esconder o buraco no topo da cabeça — o orifício por onde os golfinhos respiram, que ele não consegue esconder completamente mesmo em forma humana.
+
+Quando a festa acaba, o Boto volta para o rio e se transforma em golfinho novamente. Muitas famílias da região atribuem ao Boto a paternidade de filhos nascidos de mães solteiras.
+
+O boto-cor-de-rosa é real — é uma das espécies de golfinhos de água doce mais icônicas da Amazônia. A lenda mistura respeito ao animal com a magia do imaginário popular brasileiro.`,
+    vocab: [
+      ['ribeirinhas', 'riverside (communities)'], ['amanhecer', 'dawn/sunrise'], ['golfinho', 'dolphin'],
+      ['sedutor', 'seductive/charming'], ['orifício', 'hole/opening'], ['chapéu', 'hat'],
+      ['encantar', 'to enchant'], ['paternidade', 'paternity/fatherhood'], ['água doce', 'freshwater'],
+      ['imaginário', 'imaginary world/folklore']
+    ]
+  }
+];
+
+let currentStoryIdx = 0;
+let storyTTSActive = false;
+let storyUtterances = [];
+let storySpeedRate = 0.7;
+
+function renderStoryList() {
+  document.getElementById('story-list').innerHTML = stories.map((s, i) => `
+    <div class="story-card" onclick="openStory(${i})">
+      <h4>${s.title}</h4>
+      <div class="meta">${s.meta}</div>
+    </div>`).join('');
+}
+
+function openStory(i) {
+  currentStoryIdx = i;
+  const s = stories[i];
+  document.getElementById('story-list-view').style.display = 'none';
+  document.getElementById('story-detail-view').style.display = 'block';
+  document.getElementById('story-title').textContent = s.title;
+  document.getElementById('story-meta').textContent = s.meta;
+  // Render text with clickable words
+  const words = s.text;
+  const paras = words.split('\n\n');
+  document.getElementById('story-text-content').innerHTML = paras.map(p =>
+    '<p style="margin-bottom:16px;">' +
+    p.split(/(\s+)/).map(tok => {
+      const clean = tok.replace(/[.,!?;:"""''—\n]/g,'').toLowerCase();
+      if (!clean) return tok;
+      return `<span class="word-span" onclick="lookupWord('${clean}', event)">${tok}</span>`;
+    }).join('') + '</p>'
+  ).join('');
+  // Vocab table
+  document.getElementById('story-vocab-table').innerHTML =
+    '<tr><th>Português</th><th>English</th></tr>' +
+    s.vocab.map(([pt, en]) => `<tr><td><strong>${pt}</strong></td><td>${en}</td></tr>`).join('');
+  document.getElementById('tts-play-btn').textContent = '▶ Ouvir História';
+  storyTTSActive = false;
+  window.scrollTo(0,0);
+}
+
+function showStoryList() {
+  window.speechSynthesis.cancel();
+  storyTTSActive = false;
+  document.getElementById('story-list-view').style.display = 'block';
+  document.getElementById('story-detail-view').style.display = 'none';
+}
+
+function toggleStoryTTS() {
+  if (storyTTSActive) {
+    window.speechSynthesis.cancel();
+    storyTTSActive = false;
+    document.getElementById('tts-play-btn').textContent = '▶ Ouvir História';
+    document.querySelectorAll('.word-span').forEach(w => w.classList.remove('tts-active'));
+    return;
+  }
+  storyTTSActive = true;
+  document.getElementById('tts-play-btn').textContent = '⏹ Parar';
+  const s = stories[currentStoryIdx];
+  const u = new SpeechSynthesisUtterance(s.text);
+  u.lang = 'pt-BR';
+  u.rate = storySpeedRate;
+  u.onend = () => {
+    storyTTSActive = false;
+    document.getElementById('tts-play-btn').textContent = '▶ Ouvir História';
+  };
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function setSpeed(rate, el) {
+  storySpeedRate = rate;
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  if (storyTTSActive) { window.speechSynthesis.cancel(); storyTTSActive = false; document.getElementById('tts-play-btn').textContent = '▶ Ouvir História'; }
+}
+
+const wordDict = {
+  'ser':'to be (permanent)', 'estar':'to be (temporary)', 'ter':'to have', 'ir':'to go',
+  'fazer':'to do/make', 'ver':'to see', 'dar':'to give', 'vir':'to come',
+  'moro':'I live (morar)', 'mora':'he/she lives', 'gosto':'I like (gostar)',
+  'falo':'I speak (falar)', 'como':'I eat (comer) / how', 'tenho':'I have (ter)',
+  'floresta':'forest', 'água':'water', 'rio':'river', 'casa':'house', 'cidade':'city',
+  'povo':'people/folk', 'coração':'heart', 'menino':'boy', 'menina':'girl',
+  'bonito':'beautiful/pretty', 'grande':'big/large', 'pequeno':'small/little',
+  'muito':'very/a lot', 'bem':'well/good', 'mal':'bad/badly', 'hoje':'today',
+  'amanhã':'tomorrow', 'ontem':'yesterday', 'sempre':'always', 'nunca':'never',
+};
+
+function lookupWord(word, event) {
+  const popup = document.getElementById('wordPopup');
+  const def = wordDict[word.toLowerCase()];
+  if (def) {
+    popup.innerHTML = `<strong>${word}</strong> ${def}`;
+    popup.style.display = 'block';
+    popup.style.left = (event.pageX + 10) + 'px';
+    popup.style.top = (event.pageY - 40) + 'px';
+    setTimeout(() => popup.style.display = 'none', 3000);
+  }
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = 'pt-BR'; u.rate = 0.8;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.classList.contains('word-span')) document.getElementById('wordPopup').style.display = 'none';
+});
+
+// ============================
+// GRAMMAR
+// ============================
+const grammarContent = {
+  articles: `
+    <h3>Artigos — Articles</h3>
+    <p>Portuguese has four definite articles and four indefinite articles, agreeing in gender and number with the noun.</p>
+    <table class="grammar-table">
+      <tr><th></th><th>Masculine Singular</th><th>Feminine Singular</th><th>Masculine Plural</th><th>Feminine Plural</th></tr>
+      <tr><td><strong>Definite</strong></td><td>o</td><td>a</td><td>os</td><td>as</td></tr>
+      <tr><td><strong>Indefinite</strong></td><td>um</td><td>uma</td><td>uns</td><td>umas</td></tr>
+    </table>
+    <div class="example-box"><div class="pt">O livro / A casa / Os carros / As mesas</div><div class="en">The book / The house / The cars / The tables</div></div>
+    <div class="example-box"><div class="pt">Um gato / Uma flor / Uns amigos / Umas ideias</div><div class="en">A cat / A flower / Some friends / Some ideas</div></div>
+    <div class="rule-box"><div class="rule-title">⚠️ Contraction Rule</div>Articles contract with prepositions: <span class="highlight">de + o = do</span>, <span class="highlight">de + a = da</span>, <span class="highlight">em + o = no</span>, <span class="highlight">em + a = na</span>, <span class="highlight">a + o = ao</span>, <span class="highlight">a + a = à</span></div>
+    <div class="example-box"><div class="pt">Eu moro no Brasil. (em + o) | Ela é da Bahia. (de + a) | Fui ao mercado. (a + o)</div><div class="en">I live in Brazil. | She's from Bahia. | I went to the market.</div></div>
+    <p>Brazilian Portuguese uses articles more than European Portuguese — even before names: <span class="highlight">A Maria chegou</span> (Maria arrived).</p>
+  `,
+  nouns: `
+    <h3>Substantivos — Nouns</h3>
+    <p>All Portuguese nouns have grammatical gender (masculine or feminine). Most follow predictable patterns:</p>
+    <h3>Gender Rules</h3>
+    <table class="grammar-table">
+      <tr><th>Usually Masculine</th><th>Usually Feminine</th></tr>
+      <tr><td>Words ending in -o (livro, carro)</td><td>Words ending in -a (casa, mesa)</td></tr>
+      <tr><td>Words ending in -or (professor)</td><td>Words ending in -ção (canção, nação)</td></tr>
+      <tr><td>Words ending in -ema (problema)</td><td>Words ending in -dade (cidade, saudade)</td></tr>
+      <tr><td>Words ending in -ma (cinema, tema)</td><td>Words ending in -gem (viagem, passagem)</td></tr>
+    </table>
+    <div class="tip-box"><strong>⚠️ Exceptions:</strong> Some words break the rules: <em>o dia</em> (the day, masc.), <em>a mão</em> (the hand, fem.), <em>o mapa</em> (the map, masc.).</div>
+    <h3>Plural Formation</h3>
+    <table class="grammar-table">
+      <tr><th>Singular Ending</th><th>Plural Rule</th><th>Example</th></tr>
+      <tr><td>most words</td><td>add -s</td><td>livro → livros</td></tr>
+      <tr><td>-ão</td><td>→ -ões / -ães / -ãos</td><td>ação → ações, pão → pães</td></tr>
+      <tr><td>-m</td><td>→ -ns</td><td>homem → homens</td></tr>
+      <tr><td>-al, -el, -ol, -ul</td><td>drop -l, add -is</td><td>animal → animais</td></tr>
+      <tr><td>-r, -s, -z</td><td>add -es</td><td>flor → flores</td></tr>
+    </table>
+  `,
+  verbs: `
+    <h3>Verbos — Verbs</h3>
+    <p>Portuguese verbs belong to three conjugation groups based on their infinitive ending: <span class="highlight">-ar</span>, <span class="highlight">-er</span>, <span class="highlight">-ir</span>.</p>
+    <h3>Present Tense — Regular Verbs</h3>
+    <table class="grammar-table">
+      <tr><th>Pronoun</th><th>-ar (falar)</th><th>-er (comer)</th><th>-ir (partir)</th></tr>
+      <tr><td>Eu</td><td>falo</td><td>como</td><td>parto</td></tr>
+      <tr><td>Você/Ele/Ela</td><td>fala</td><td>come</td><td>parte</td></tr>
+      <tr><td>Nós</td><td>falamos</td><td>comemos</td><td>partimos</td></tr>
+      <tr><td>Vocês/Eles/Elas</td><td>falam</td><td>comem</td><td>partem</td></tr>
+    </table>
+    <h3>Key Irregular Verbs</h3>
+    <table class="grammar-table">
+      <tr><th>Pronoun</th><th>ser (to be)</th><th>estar (to be)</th><th>ter (to have)</th><th>ir (to go)</th></tr>
+      <tr><td>Eu</td><td>sou</td><td>estou</td><td>tenho</td><td>vou</td></tr>
+      <tr><td>Você/Ele/Ela</td><td>é</td><td>está</td><td>tem</td><td>vai</td></tr>
+      <tr><td>Nós</td><td>somos</td><td>estamos</td><td>temos</td><td>vamos</td></tr>
+      <tr><td>Vocês/Eles</td><td>são</td><td>estão</td><td>têm</td><td>vão</td></tr>
+    </table>
+    <div class="rule-box"><div class="rule-title">SER vs ESTAR</div>
+      <strong>SER</strong> = permanent: nationality, identity, time, origin — <em>Ela é brasileira.</em><br>
+      <strong>ESTAR</strong> = temporary: emotions, location, conditions — <em>Ela está cansada.</em>
+    </div>
+  `,
+  pronouns: `
+    <h3>Pronomes — Pronouns</h3>
+    <h3>Subject Pronouns</h3>
+    <table class="grammar-table">
+      <tr><th>Portuguese</th><th>English</th><th>Notes</th></tr>
+      <tr><td>Eu</td><td>I</td><td>Always lowercase except at start of sentence</td></tr>
+      <tr><td>Você</td><td>You (singular)</td><td>Most common in Brazil (uses 3rd person verb)</td></tr>
+      <tr><td>Ele / Ela</td><td>He / She</td><td></td></tr>
+      <tr><td>Nós</td><td>We</td><td>Formal; <em>a gente</em> is more common in Brazil</td></tr>
+      <tr><td>A gente</td><td>We (informal)</td><td>Uses 3rd person singular verb!</td></tr>
+      <tr><td>Vocês</td><td>You (plural)</td><td>Used everywhere in Brazil</td></tr>
+      <tr><td>Eles / Elas</td><td>They (m/f)</td><td></td></tr>
+    </table>
+    <div class="tip-box"><strong>💡 Brazilian tip:</strong> Brazil dropped <em>tu</em> (except in some regions like Rio Grande do Sul) and uses <em>você</em> for both formal and informal. "A gente" is extremely common in speech.</div>
+    <h3>Object Pronouns</h3>
+    <table class="grammar-table">
+      <tr><th>Direct Object</th><th>Indirect Object</th><th>Reflexive</th></tr>
+      <tr><td>me, te, o/a, nos, os/as</td><td>me, te, lhe, nos, lhes</td><td>me, se, nos</td></tr>
+    </table>
+    <div class="example-box"><div class="pt">Ela me viu. / Eu te ligo. / Ele se machucou.</div><div class="en">She saw me. / I'll call you. / He hurt himself.</div></div>
+    <div class="tip-box"><strong>💡 Brazilians</strong> often avoid object pronouns in informal speech: <em>"Vi ela ontem"</em> instead of <em>"A vi ontem"</em>.</div>
+  `,
+  adjectives: `
+    <h3>Adjetivos — Adjectives</h3>
+    <p>Adjectives in Portuguese <strong>agree in gender and number</strong> with the noun they describe.</p>
+    <table class="grammar-table">
+      <tr><th></th><th>Masculine Sing.</th><th>Feminine Sing.</th><th>Masc. Plural</th><th>Fem. Plural</th></tr>
+      <tr><td>beautiful</td><td>bonito</td><td>bonita</td><td>bonitos</td><td>bonitas</td></tr>
+      <tr><td>big</td><td>grande</td><td>grande</td><td>grandes</td><td>grandes</td></tr>
+      <tr><td>Brazilian</td><td>brasileiro</td><td>brasileira</td><td>brasileiros</td><td>brasileiras</td></tr>
+      <tr><td>happy</td><td>feliz</td><td>feliz</td><td>felizes</td><td>felizes</td></tr>
+    </table>
+    <div class="rule-box"><div class="rule-title">📍 Position</div>
+      Most adjectives go <strong>after</strong> the noun in Portuguese:<br>
+      <em>uma casa <span class="highlight">grande</span></em> (a big house) | <em>um carro <span class="highlight">vermelho</span></em> (a red car)<br><br>
+      Some common adjectives can go <strong>before</strong>:<br>
+      <em>um <span class="highlight">bom</span> professor</em> | <em>uma <span class="highlight">boa</span> ideia</em> | <em>um <span class="highlight">grande</span> homem</em>
+    </div>
+    <h3>Comparatives and Superlatives</h3>
+    <table class="grammar-table">
+      <tr><th>Type</th><th>Structure</th><th>Example</th></tr>
+      <tr><td>Comparative (more)</td><td>mais + adj + do que</td><td>Ela é mais alta do que eu.</td></tr>
+      <tr><td>Comparative (less)</td><td>menos + adj + do que</td><td>Esse é menos caro.</td></tr>
+      <tr><td>Superlative</td><td>o/a mais + adj</td><td>O Brasil é o maior país.</td></tr>
+      <tr><td>Absolute superlative</td><td>adj + -íssimo/a</td><td>belíssimo, grandíssimo</td></tr>
+    </table>
+  `,
+  prepositions: `
+    <h3>Preposições — Prepositions</h3>
+    <p>Prepositions link nouns, pronouns, and phrases. They contract with articles:</p>
+    <table class="grammar-table">
+      <tr><th>Preposition</th><th>Meaning</th><th>Contractions</th><th>Example</th></tr>
+      <tr><td><strong>de</strong></td><td>of, from, about</td><td>do, da, dos, das</td><td>Sou do Brasil.</td></tr>
+      <tr><td><strong>em</strong></td><td>in, at, on</td><td>no, na, nos, nas</td><td>Estou no trabalho.</td></tr>
+      <tr><td><strong>a</strong></td><td>to, at</td><td>ao, à, aos, às</td><td>Vou à praia.</td></tr>
+      <tr><td><strong>por</strong></td><td>by, through, for</td><td>pelo, pela</td><td>Passei pelo parque.</td></tr>
+      <tr><td><strong>para</strong></td><td>for, to (purpose)</td><td>—</td><td>Este livro é para você.</td></tr>
+      <tr><td><strong>com</strong></td><td>with</td><td>comigo, contigo</td><td>Vem comigo!</td></tr>
+      <tr><td><strong>sem</strong></td><td>without</td><td>—</td><td>Café sem açúcar.</td></tr>
+      <tr><td><strong>sobre</strong></td><td>about, over</td><td>—</td><td>Fala sobre o Brasil.</td></tr>
+    </table>
+    <div class="tip-box"><strong>💡 Para vs. Por:</strong> Use <em>para</em> for destination/purpose: <em>Saí para o trabalho</em>. Use <em>por</em> for cause/exchange: <em>Obrigado por tudo</em>.</div>
+  `,
+  tenses: `
+    <h3>Tempos Verbais — Verb Tenses</h3>
+    <h3>1. Presente (Present)</h3>
+    <p>Used for current actions, habits, and general truths.</p>
+    <div class="example-box"><div class="pt">Eu trabalho todo dia. / O Brasil fica na América do Sul.</div><div class="en">I work every day. / Brazil is in South America.</div></div>
+    <h3>2. Pretérito Perfeito (Simple Past)</h3>
+    <p>For completed actions at a specific time.</p>
+    <table class="grammar-table">
+      <tr><th>Pronoun</th><th>falar</th><th>comer</th><th>partir</th></tr>
+      <tr><td>Eu</td><td>falei</td><td>comi</td><td>parti</td></tr>
+      <tr><td>Você/Ele/Ela</td><td>falou</td><td>comeu</td><td>partiu</td></tr>
+      <tr><td>Nós</td><td>falamos</td><td>comemos</td><td>partimos</td></tr>
+      <tr><td>Vocês/Eles</td><td>falaram</td><td>comeram</td><td>partiram</td></tr>
+    </table>
+    <h3>3. Pretérito Imperfeito (Imperfect Past)</h3>
+    <p>For habitual past actions or ongoing states in the past.</p>
+    <div class="example-box"><div class="pt">Quando era criança, eu brincava muito. (When I was a child, I played a lot.)</div></div>
+    <h3>4. Futuro (Future)</h3>
+    <p>Brazilian Portuguese commonly uses <strong>ir + infinitive</strong> for the near future:</p>
+    <div class="example-box"><div class="pt">Eu vou estudar amanhã. / Ela vai viajar semana que vem.</div><div class="en">I'm going to study tomorrow. / She's going to travel next week.</div></div>
+    <h3>5. Subjuntivo (Subjunctive)</h3>
+    <p>Used after expressions of doubt, emotion, and necessity.</p>
+    <div class="example-box"><div class="pt">Espero que você venha. / É importante que ele estude.</div><div class="en">I hope you come. / It's important that he study.</div></div>
+  `,
+  sentence: `
+    <h3>Estrutura da Frase — Sentence Structure</h3>
+    <p>Portuguese follows Subject-Verb-Object (SVO) order, like English, but with some key differences.</p>
+    <div class="rule-box"><div class="rule-title">Basic Word Order</div>
+      <span class="highlight">Sujeito + Verbo + Objeto</span><br>
+      <em>Eu (S) como (V) arroz (O).</em> — I eat rice.
+    </div>
+    <h3>Questions</h3>
+    <p>In Brazilian Portuguese, questions are often formed just by intonation (rising at the end), without changing word order:</p>
+    <div class="example-box"><div class="pt">Você fala inglês. → Você fala inglês?</div><div class="en">You speak English. → Do you speak English?</div></div>
+    <p>Question words (interrogativos):</p>
+    <table class="grammar-table">
+      <tr><th>Português</th><th>English</th><th>Example</th></tr>
+      <tr><td>O que / Que</td><td>What</td><td>O que você quer?</td></tr>
+      <tr><td>Quem</td><td>Who</td><td>Quem é você?</td></tr>
+      <tr><td>Onde</td><td>Where</td><td>Onde você mora?</td></tr>
+      <tr><td>Quando</td><td>When</td><td>Quando você chega?</td></tr>
+      <tr><td>Por que</td><td>Why</td><td>Por que você foi?</td></tr>
+      <tr><td>Como</td><td>How</td><td>Como você está?</td></tr>
+      <tr><td>Quanto/a</td><td>How much</td><td>Quanto custa?</td></tr>
+    </table>
+    <h3>Negation</h3>
+    <p>Simply place <span class="highlight">não</span> before the verb:</p>
+    <div class="example-box"><div class="pt">Eu não falo japonês. / Ela não está aqui.</div><div class="en">I don't speak Japanese. / She's not here.</div></div>
+    <p>Double negatives are grammatically correct and common in Brazil: <em>"Não vi nada"</em> (I didn't see anything).</p>
+  `
+};
+
+function showGrammarTab(tab, el) {
+  if (el) {
+    document.querySelectorAll('.grammar-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+  document.getElementById('grammar-content').innerHTML = grammarContent[tab] || '';
+}
+
+// Init
+renderLessonList();
+loadQuiz('vocab');
+renderFillExercises();
+renderTranslateExercises();
+nextFreePrompt();
+renderStoryList();
+showGrammarTab('articles');
+updateSpeakPhrase();
+</script>
+</body>
+</html>
