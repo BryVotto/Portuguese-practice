@@ -136,6 +136,34 @@
   .vocab-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
   .vocab-table tr:nth-child(even) td { background: #f9fafb; }
   .vocab-table tr:hover td { background: #f0fdf4; }
+
+  /* FOOD / COLOR PICTURE GRIDS */
+  .food-category-title { font-size: 1.1rem; font-weight: 800; color: var(--blue); margin: 24px 0 12px; }
+  .food-category-title:first-of-type { margin-top: 4px; }
+  .food-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 8px; }
+  .food-card { background: white; border: 2px solid var(--border); border-radius: 12px; padding: 14px 8px; text-align: center; transition: all .15s; }
+  .food-card:hover { border-color: var(--green); box-shadow: var(--shadow); transform: translateY(-2px); }
+  .food-card .emoji { font-size: 2.2rem; display: block; margin-bottom: 6px; }
+  .food-card .pt-name { font-weight: 700; font-size: 0.85rem; color: var(--text); }
+  .food-card .en-name { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin: 16px 0; }
+  .color-card { display: flex; align-items: center; gap: 10px; background: white; border: 2px solid var(--border); border-radius: 10px; padding: 10px 12px; transition: all .15s; }
+  .color-card:hover { border-color: var(--green); box-shadow: var(--shadow); }
+  .color-swatch { width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.12); }
+  .color-card .pt-name { font-weight: 700; font-size: 0.85rem; }
+  .color-card .en-name { font-size: 0.72rem; color: var(--muted); }
+
+  /* MEMORY GAME */
+  .memory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+  .memory-card { position: relative; height: 92px; cursor: pointer; perspective: 700px; }
+  .memory-card-inner { position: relative; width: 100%; height: 100%; transition: transform .4s; transform-style: preserve-3d; }
+  .memory-card.flipped .memory-card-inner, .memory-card.matched .memory-card-inner { transform: rotateY(180deg); }
+  .memory-card-face { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 6px; border-radius: 12px; backface-visibility: hidden; font-weight: 700; font-size: 0.82rem; line-height: 1.25; box-shadow: var(--shadow); word-break: break-word; }
+  .memory-card-back { background: linear-gradient(135deg, var(--blue), var(--green)); color: white; font-size: 1.8rem; }
+  .memory-card-front { background: white; color: var(--text); transform: rotateY(180deg); border: 2px solid var(--border); }
+  .memory-card.matched .memory-card-front { border-color: var(--green); background: #dcfce7; color: #166534; }
+  .memory-card.mismatch .memory-card-front { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+
   .example-box { background: #f0fdf4; border-left: 4px solid var(--green); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-style: italic; }
   .example-box .pt { font-weight: 600; color: var(--blue); }
   .example-box .en { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
@@ -261,6 +289,7 @@
     <li><a href="#" onclick="showPage('speaking')" id="nav-speaking">Fala</a></li>
     <li><a href="#" onclick="showPage('reading')" id="nav-reading">Leitura</a></li>
     <li><a href="#" onclick="showPage('grammar')" id="nav-grammar">Gramática</a></li>
+    <li><a href="#" onclick="showPage('memory')" id="nav-memory">Memória</a></li>
   </ul>
 </nav>
 
@@ -319,6 +348,7 @@
     <div class="quiz-tab" onclick="loadQuiz('phrases', this)">Frases</div>
     <div class="quiz-tab" onclick="loadQuiz('verbs', this)">Verbos</div>
     <div class="quiz-tab" onclick="loadQuiz('numbers', this)">Números</div>
+    <div class="quiz-tab" onclick="loadQuiz('aulas', this)">Aulas (tudo)</div>
   </div>
   <div class="card" id="quiz-container">
     <!-- dynamically rendered -->
@@ -478,6 +508,40 @@
   <div class="card" id="grammar-content"></div>
 </div>
 
+<!-- ========== MEMORY GAME ========== -->
+<div id="page-memory" class="page">
+  <div class="section-header">
+    <h2>🧠 Jogo da Memória</h2>
+    <p>Combine as palavras em português com as traduções em inglês — usando todo o vocabulário das Aulas</p>
+  </div>
+  <div class="card">
+    <div style="font-size:0.85rem; color:var(--muted); margin-bottom:10px;">Categoria:</div>
+    <div class="quiz-tabs" id="memory-category-tabs">
+      <div class="quiz-tab active" onclick="setMemoryCategory('all', this)">Tudo</div>
+      <div class="quiz-tab" onclick="setMemoryCategory('greetings', this)">Saudações</div>
+      <div class="quiz-tab" onclick="setMemoryCategory('numbers', this)">Números</div>
+      <div class="quiz-tab" onclick="setMemoryCategory('family', this)">Família</div>
+      <div class="quiz-tab" onclick="setMemoryCategory('food', this)">Comida</div>
+      <div class="quiz-tab" onclick="setMemoryCategory('travel', this)">Viagem</div>
+      <div class="quiz-tab" onclick="setMemoryCategory('culture', this)">Cultura</div>
+      <div class="quiz-tab" onclick="setMemoryCategory('months', this)">Meses</div>
+      <div class="quiz-tab" onclick="setMemoryCategory('days', this)">Dias</div>
+      <div class="quiz-tab" onclick="setMemoryCategory('colors', this)">Cores</div>
+      <div class="quiz-tab" onclick="setMemoryCategory('food-pics', this)">Frutas/Vegetais/Carnes</div>
+    </div>
+    <div style="font-size:0.85rem; color:var(--muted); margin-bottom:10px;">Dificuldade:</div>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:20px;" id="memory-size-buttons">
+      <button class="speed-btn" onclick="setMemorySize(6, this)">Fácil (6 pares)</button>
+      <button class="speed-btn active" onclick="setMemorySize(8, this)">Médio (8 pares)</button>
+      <button class="speed-btn" onclick="setMemorySize(12, this)">Difícil (12 pares)</button>
+      <button class="btn btn-primary" onclick="startMemoryGame()" style="margin-left:auto;">🔄 Novo Jogo</button>
+    </div>
+    <div id="memory-stats" style="display:flex; gap:24px; margin-bottom:18px; font-size:0.92rem; color:var(--muted); font-weight:600;"></div>
+    <div class="memory-grid" id="memory-grid"></div>
+    <div id="memory-win" style="display:none; margin-top:20px;"></div>
+  </div>
+</div>
+
 <script>
 // ============================
 // NAVIGATION
@@ -495,6 +559,7 @@ function showPage(id) {
   if (id === 'reading') renderStoryList();
   if (id === 'grammar') showGrammarTab('articles');
   if (id === 'speaking') requestMicPermission();
+  if (id === 'memory') startMemoryGame();
 }
 
 // ============================
@@ -543,6 +608,202 @@ const quizData = {
   ]
 };
 
+// ============================
+// AULAS VOCABULARY (shared by Quiz "Aulas" tab and the Memory Game)
+// ============================
+const aulasVocab = [
+  // Saudações (greetings)
+  { pt: 'Bom dia', en: 'Good morning', cat: 'greetings' },
+  { pt: 'Boa tarde', en: 'Good afternoon', cat: 'greetings' },
+  { pt: 'Boa noite', en: 'Good evening / night', cat: 'greetings' },
+  { pt: 'Olá / Oi', en: 'Hello / Hi', cat: 'greetings' },
+  { pt: 'Tudo bem?', en: 'Everything OK?', cat: 'greetings' },
+  { pt: 'Como vai?', en: "How's it going?", cat: 'greetings' },
+  { pt: 'Muito prazer', en: 'Nice to meet you', cat: 'greetings' },
+  { pt: 'Tchau / Até logo', en: 'Bye / See you', cat: 'greetings' },
+  // Números (numbers)
+  { pt: 'zero', en: 'zero', cat: 'numbers' },
+  { pt: 'um / uma', en: 'one', cat: 'numbers' },
+  { pt: 'dois / duas', en: 'two', cat: 'numbers' },
+  { pt: 'três', en: 'three', cat: 'numbers' },
+  { pt: 'quatro', en: 'four', cat: 'numbers' },
+  { pt: 'cinco', en: 'five', cat: 'numbers' },
+  { pt: 'seis', en: 'six', cat: 'numbers' },
+  { pt: 'sete', en: 'seven', cat: 'numbers' },
+  { pt: 'oito', en: 'eight', cat: 'numbers' },
+  { pt: 'nove', en: 'nine', cat: 'numbers' },
+  { pt: 'dez', en: 'ten', cat: 'numbers' },
+  { pt: 'onze', en: 'eleven', cat: 'numbers' },
+  { pt: 'doze', en: 'twelve', cat: 'numbers' },
+  { pt: 'treze', en: 'thirteen', cat: 'numbers' },
+  { pt: 'vinte', en: 'twenty', cat: 'numbers' },
+  { pt: 'trinta', en: 'thirty', cat: 'numbers' },
+  { pt: 'cem / cento', en: 'one hundred', cat: 'numbers' },
+  { pt: 'mil', en: 'one thousand', cat: 'numbers' },
+  { pt: 'um milhão', en: 'one million', cat: 'numbers' },
+  // Família (family)
+  { pt: 'pai', en: 'father', cat: 'family' },
+  { pt: 'mãe', en: 'mother', cat: 'family' },
+  { pt: 'irmão', en: 'brother', cat: 'family' },
+  { pt: 'irmã', en: 'sister', cat: 'family' },
+  { pt: 'filho', en: 'son', cat: 'family' },
+  { pt: 'filha', en: 'daughter', cat: 'family' },
+  { pt: 'avô', en: 'grandfather', cat: 'family' },
+  { pt: 'avó', en: 'grandmother', cat: 'family' },
+  { pt: 'tio', en: 'uncle', cat: 'family' },
+  { pt: 'tia', en: 'aunt', cat: 'family' },
+  { pt: 'primo', en: 'cousin (m)', cat: 'family' },
+  { pt: 'prima', en: 'cousin (f)', cat: 'family' },
+  { pt: 'marido', en: 'husband', cat: 'family' },
+  { pt: 'esposa', en: 'wife', cat: 'family' },
+  { pt: 'namorado', en: 'boyfriend', cat: 'family' },
+  { pt: 'namorada', en: 'girlfriend', cat: 'family' },
+  // Comida (Brazilian dishes)
+  { pt: 'feijoada', en: 'black bean stew', cat: 'food' },
+  { pt: 'churrasco', en: 'BBQ', cat: 'food' },
+  { pt: 'pão de queijo', en: 'cheese bread', cat: 'food' },
+  { pt: 'coxinha', en: 'chicken croquette', cat: 'food' },
+  { pt: 'açaí', en: 'açaí berry bowl', cat: 'food' },
+  { pt: 'caipirinha', en: 'lime & cachaça cocktail', cat: 'food' },
+  { pt: 'arroz e feijão', en: 'rice and beans', cat: 'food' },
+  { pt: 'brigadeiro', en: 'chocolate truffle', cat: 'food' },
+  // Viagem (travel)
+  { pt: 'Onde fica...?', en: 'Where is...?', cat: 'travel' },
+  { pt: 'Quanto custa a passagem?', en: 'How much is the ticket?', cat: 'travel' },
+  { pt: 'Quero ir para...', en: 'I want to go to...', cat: 'travel' },
+  { pt: 'Tem quarto disponível?', en: 'Is there a room available?', cat: 'travel' },
+  { pt: 'Pode me chamar um Uber?', en: 'Can you call me an Uber?', cat: 'travel' },
+  { pt: 'Qual o horário de funcionamento?', en: 'What are the opening hours?', cat: 'travel' },
+  { pt: 'Estou perdido/a', en: 'I am lost', cat: 'travel' },
+  { pt: 'Me mostra no mapa?', en: 'Can you show me on the map?', cat: 'travel' },
+  // Cultura (idioms)
+  { pt: 'Que saudade!', en: 'I miss you/this so much!', cat: 'culture' },
+  { pt: 'Não tem jeito', en: 'Nothing can be done', cat: 'culture' },
+  { pt: 'Dar um rolê', en: 'To hang out / go for a walk', cat: 'culture' },
+  { pt: 'Ficar de bobeira', en: 'To do nothing, chill', cat: 'culture' },
+  { pt: 'Vai nessa!', en: "Go for it! / Let's do it!", cat: 'culture' },
+  { pt: 'Tá na mão', en: "It's done / taken care of", cat: 'culture' },
+  { pt: 'Essa é boa!', en: "That's funny! / Yeah right!", cat: 'culture' },
+  { pt: 'Meu Deus!', en: 'Oh my God!', cat: 'culture' },
+  // Meses (months)
+  { pt: 'janeiro', en: 'January', cat: 'months' },
+  { pt: 'fevereiro', en: 'February', cat: 'months' },
+  { pt: 'março', en: 'March', cat: 'months' },
+  { pt: 'abril', en: 'April', cat: 'months' },
+  { pt: 'maio', en: 'May', cat: 'months' },
+  { pt: 'junho', en: 'June', cat: 'months' },
+  { pt: 'julho', en: 'July', cat: 'months' },
+  { pt: 'agosto', en: 'August', cat: 'months' },
+  { pt: 'setembro', en: 'September', cat: 'months' },
+  { pt: 'outubro', en: 'October', cat: 'months' },
+  { pt: 'novembro', en: 'November', cat: 'months' },
+  { pt: 'dezembro', en: 'December', cat: 'months' },
+  // Dias (days)
+  { pt: 'domingo', en: 'Sunday', cat: 'days' },
+  { pt: 'segunda-feira', en: 'Monday', cat: 'days' },
+  { pt: 'terça-feira', en: 'Tuesday', cat: 'days' },
+  { pt: 'quarta-feira', en: 'Wednesday', cat: 'days' },
+  { pt: 'quinta-feira', en: 'Thursday', cat: 'days' },
+  { pt: 'sexta-feira', en: 'Friday', cat: 'days' },
+  { pt: 'sábado', en: 'Saturday', cat: 'days' },
+  // Cores (colors)
+  { pt: 'vermelho', en: 'red', cat: 'colors' },
+  { pt: 'azul', en: 'blue', cat: 'colors' },
+  { pt: 'verde', en: 'green', cat: 'colors' },
+  { pt: 'amarelo', en: 'yellow', cat: 'colors' },
+  { pt: 'roxo', en: 'purple', cat: 'colors' },
+  { pt: 'rosa', en: 'pink', cat: 'colors' },
+  { pt: 'laranja', en: 'orange', cat: 'colors' },
+  { pt: 'branco', en: 'white', cat: 'colors' },
+  { pt: 'preto', en: 'black', cat: 'colors' },
+  { pt: 'cinza', en: 'gray', cat: 'colors' },
+  { pt: 'marrom', en: 'brown', cat: 'colors' },
+  { pt: 'dourado', en: 'gold', cat: 'colors' },
+  { pt: 'prateado', en: 'silver', cat: 'colors' },
+  { pt: 'turquesa', en: 'turquoise', cat: 'colors' },
+  { pt: 'bege', en: 'beige', cat: 'colors' },
+  // Frutas (fruits)
+  { pt: 'maçã', en: 'apple', cat: 'food-pics', emoji: '🍎' },
+  { pt: 'banana', en: 'banana', cat: 'food-pics', emoji: '🍌' },
+  { pt: 'laranja (fruta)', en: 'orange (fruit)', cat: 'food-pics', emoji: '🍊' },
+  { pt: 'uva', en: 'grape', cat: 'food-pics', emoji: '🍇' },
+  { pt: 'morango', en: 'strawberry', cat: 'food-pics', emoji: '🍓' },
+  { pt: 'abacaxi', en: 'pineapple', cat: 'food-pics', emoji: '🍍' },
+  { pt: 'melancia', en: 'watermelon', cat: 'food-pics', emoji: '🍉' },
+  { pt: 'pêssego', en: 'peach', cat: 'food-pics', emoji: '🍑' },
+  { pt: 'cereja', en: 'cherry', cat: 'food-pics', emoji: '🍒' },
+  { pt: 'limão', en: 'lemon / lime', cat: 'food-pics', emoji: '🍋' },
+  { pt: 'coco', en: 'coconut', cat: 'food-pics', emoji: '🥥' },
+  { pt: 'manga', en: 'mango', cat: 'food-pics', emoji: '🥭' },
+  { pt: 'kiwi', en: 'kiwi', cat: 'food-pics', emoji: '🥝' },
+  { pt: 'pera', en: 'pear', cat: 'food-pics', emoji: '🍐' },
+  { pt: 'melão', en: 'melon', cat: 'food-pics', emoji: '🍈' },
+  { pt: 'abacate', en: 'avocado', cat: 'food-pics', emoji: '🥑' },
+  // Vegetais (vegetables)
+  { pt: 'tomate', en: 'tomato', cat: 'food-pics', emoji: '🍅' },
+  { pt: 'cenoura', en: 'carrot', cat: 'food-pics', emoji: '🥕' },
+  { pt: 'batata', en: 'potato', cat: 'food-pics', emoji: '🥔' },
+  { pt: 'cebola', en: 'onion', cat: 'food-pics', emoji: '🧅' },
+  { pt: 'alho', en: 'garlic', cat: 'food-pics', emoji: '🧄' },
+  { pt: 'milho', en: 'corn', cat: 'food-pics', emoji: '🌽' },
+  { pt: 'pimentão', en: 'bell pepper', cat: 'food-pics', emoji: '🫑' },
+  { pt: 'pepino', en: 'cucumber', cat: 'food-pics', emoji: '🥒' },
+  { pt: 'brócolis', en: 'broccoli', cat: 'food-pics', emoji: '🥦' },
+  { pt: 'alface', en: 'lettuce', cat: 'food-pics', emoji: '🥬' },
+  { pt: 'berinjela', en: 'eggplant', cat: 'food-pics', emoji: '🍆' },
+  { pt: 'abóbora', en: 'pumpkin / squash', cat: 'food-pics', emoji: '🎃' },
+  { pt: 'ervilha', en: 'pea', cat: 'food-pics', emoji: '🫛' },
+  { pt: 'batata-doce', en: 'sweet potato', cat: 'food-pics', emoji: '🍠' },
+  { pt: 'cogumelo', en: 'mushroom', cat: 'food-pics', emoji: '🍄' },
+  // Carnes e Frutos do Mar (meats & seafood)
+  { pt: 'carne bovina', en: 'beef / steak', cat: 'food-pics', emoji: '🥩' },
+  { pt: 'frango', en: 'chicken', cat: 'food-pics', emoji: '🍗' },
+  { pt: 'carne de porco', en: 'pork', cat: 'food-pics', emoji: '🐖' },
+  { pt: 'peixe', en: 'fish', cat: 'food-pics', emoji: '🐟' },
+  { pt: 'peru', en: 'turkey', cat: 'food-pics', emoji: '🦃' },
+  { pt: 'carneiro', en: 'lamb', cat: 'food-pics', emoji: '🐑' },
+  { pt: 'bacon / toucinho', en: 'bacon', cat: 'food-pics', emoji: '🥓' },
+  { pt: 'presunto', en: 'ham', cat: 'food-pics', emoji: '🍖' },
+  { pt: 'linguiça', en: 'sausage', cat: 'food-pics', emoji: '🌭' },
+  { pt: 'camarão', en: 'shrimp', cat: 'food-pics', emoji: '🍤' },
+  { pt: 'lagosta', en: 'lobster', cat: 'food-pics', emoji: '🦞' },
+  { pt: 'caranguejo', en: 'crab', cat: 'food-pics', emoji: '🦀' },
+];
+
+const aulasCategoryLabels = { greetings:'Saudações', numbers:'Números', family:'Família', food:'Comida', travel:'Viagem', culture:'Cultura', months:'Meses', days:'Dias', colors:'Cores', 'food-pics':'Frutas/Vegetais/Carnes' };
+
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function generateAulasQuiz(n) {
+  const pool = shuffleArray(aulasVocab).slice(0, Math.min(n, aulasVocab.length));
+  return pool.map(item => {
+    const ptToEn = Math.random() < 0.5;
+    const correctText = ptToEn ? item.en : item.pt;
+    const others = aulasVocab.filter(v => v !== item);
+    const shuffledOthers = shuffleArray(others);
+    const distractorTexts = [];
+    for (const o of shuffledOthers) {
+      const text = ptToEn ? o.en : o.pt;
+      if (text.toLowerCase() !== correctText.toLowerCase() && !distractorTexts.includes(text)) {
+        distractorTexts.push(text);
+      }
+      if (distractorTexts.length === 3) break;
+    }
+    const opts = shuffleArray([correctText, ...distractorTexts]);
+    const a = opts.indexOf(correctText);
+    const q = ptToEn ? `O que significa "${item.pt}"?` : `Como se diz "${item.en}" em português?`;
+    const exp = `"${item.pt}" significa "${item.en}". (Aulas: ${aulasCategoryLabels[item.cat] || item.cat})`;
+    return { q, opts, a, exp };
+  });
+}
+
 let currentQuizType = 'vocab';
 let currentQ = 0;
 let quizScore = 0;
@@ -557,7 +818,10 @@ function loadQuiz(type, tabEl) {
     document.querySelectorAll('.quiz-tab').forEach(t => t.classList.remove('active'));
     tabEl.classList.add('active');
   }
-  const labels = { vocab:'Vocabulário', phrases:'Frases', verbs:'Verbos', numbers:'Números' };
+  if (type === 'aulas') {
+    quizData.aulas = generateAulasQuiz(12);
+  }
+  const labels = { vocab:'Vocabulário', phrases:'Frases', verbs:'Verbos', numbers:'Números', aulas:'Aulas (tudo)' };
   document.getElementById('quiz-badge').textContent = labels[type];
   renderQuestion();
 }
@@ -734,6 +998,142 @@ const lessons = [
         <tr><td>Vamos nessa!</td><td>Let's in that!</td><td>Let's go!</td></tr>
       </table>
       <div class="example-box"><div class="pt">— Vamos dar um rolê no parque?<br>— Vai nessa! Tá na mão!</div><div class="en">Wanna hang out in the park? / Let's go! I'm in!</div></div>
+    `
+  },
+  {
+    id: 'months', title: 'Meses do Ano', level: 'beginner',
+    desc: 'Learn the 12 months of the year in Portuguese',
+    content: `
+      <h3>Meses do Ano — Months of the Year</h3>
+      <p>The months in Portuguese share Latin roots with English, so most are easy to recognize. Unlike English, they are <strong>not capitalized</strong> in Portuguese.</p>
+      <table class="vocab-table"><tr><th>Português</th><th>English</th></tr>
+        <tr><td><strong>janeiro</strong></td><td>January</td></tr>
+        <tr><td><strong>fevereiro</strong></td><td>February</td></tr>
+        <tr><td><strong>março</strong></td><td>March</td></tr>
+        <tr><td><strong>abril</strong></td><td>April</td></tr>
+        <tr><td><strong>maio</strong></td><td>May</td></tr>
+        <tr><td><strong>junho</strong></td><td>June</td></tr>
+        <tr><td><strong>julho</strong></td><td>July</td></tr>
+        <tr><td><strong>agosto</strong></td><td>August</td></tr>
+        <tr><td><strong>setembro</strong></td><td>September</td></tr>
+        <tr><td><strong>outubro</strong></td><td>October</td></tr>
+        <tr><td><strong>novembro</strong></td><td>November</td></tr>
+        <tr><td><strong>dezembro</strong></td><td>December</td></tr>
+      </table>
+      <div class="example-box"><div class="pt">Meu aniversário é em julho. Estamos em dezembro.</div><div class="en">My birthday is in July. We're in December.</div></div>
+      <div class="tip-box"><strong>💡 Tip:</strong> Use <span class="highlight">em</span> to say "in" a month — "em janeiro" (in January). Months stay lowercase even at the start of a sentence.</div>
+    `
+  },
+  {
+    id: 'days', title: 'Dias da Semana', level: 'beginner',
+    desc: 'Learn the days of the week in Portuguese',
+    content: `
+      <h3>Dias da Semana — Days of the Week</h3>
+      <p>Most weekdays in Portuguese follow the pattern "-feira" (from an old tradition of calling weekdays "fair/market days"), except for Saturday and Sunday, which have their own names.</p>
+      <table class="vocab-table"><tr><th>Português</th><th>English</th><th>Abreviação</th></tr>
+        <tr><td><strong>domingo</strong></td><td>Sunday</td><td>dom.</td></tr>
+        <tr><td><strong>segunda-feira</strong></td><td>Monday</td><td>2ª / seg.</td></tr>
+        <tr><td><strong>terça-feira</strong></td><td>Tuesday</td><td>3ª / ter.</td></tr>
+        <tr><td><strong>quarta-feira</strong></td><td>Wednesday</td><td>4ª / qua.</td></tr>
+        <tr><td><strong>quinta-feira</strong></td><td>Thursday</td><td>5ª / qui.</td></tr>
+        <tr><td><strong>sexta-feira</strong></td><td>Friday</td><td>6ª / sex.</td></tr>
+        <tr><td><strong>sábado</strong></td><td>Saturday</td><td>sáb.</td></tr>
+      </table>
+      <div class="example-box"><div class="pt">Hoje é sexta-feira! Amanhã é sábado.</div><div class="en">Today is Friday! Tomorrow is Saturday.</div></div>
+      <div class="tip-box"><strong>💡 Tip:</strong> "Domingo" (Sunday, the "Lord's day") and "sábado" (Saturday, from "Sabbath") don't take "-feira". In casual speech, Brazilians often shorten weekdays to just "segunda", "terça", etc.</div>
+    `
+  },
+  {
+    id: 'colors', title: 'Cores', level: 'beginner',
+    desc: 'Learn colors in Portuguese with visual swatches',
+    content: `
+      <h3>Cores — Colors</h3>
+      <p>Colors in Portuguese are adjectives, so many of them change form to match the gender of the noun they describe (e.g. "carro vermelho" but "casa vermelha").</p>
+      <div class="color-grid">
+        <div class="color-card"><div class="color-swatch" style="background:#ef4444;"></div><div><div class="pt-name">vermelho</div><div class="en-name">red</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#3b82f6;"></div><div><div class="pt-name">azul</div><div class="en-name">blue</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#22c55e;"></div><div><div class="pt-name">verde</div><div class="en-name">green</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#facc15;"></div><div><div class="pt-name">amarelo</div><div class="en-name">yellow</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#a855f7;"></div><div><div class="pt-name">roxo</div><div class="en-name">purple</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#ec4899;"></div><div><div class="pt-name">rosa</div><div class="en-name">pink</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#f97316;"></div><div><div class="pt-name">laranja</div><div class="en-name">orange</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#ffffff;"></div><div><div class="pt-name">branco</div><div class="en-name">white</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#111827;"></div><div><div class="pt-name">preto</div><div class="en-name">black</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#9ca3af;"></div><div><div class="pt-name">cinza</div><div class="en-name">gray</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#92400e;"></div><div><div class="pt-name">marrom</div><div class="en-name">brown</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#d4af37;"></div><div><div class="pt-name">dourado</div><div class="en-name">gold</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#c0c0c0;"></div><div><div class="pt-name">prateado</div><div class="en-name">silver</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#14b8a6;"></div><div><div class="pt-name">turquesa</div><div class="en-name">turquoise</div></div></div>
+        <div class="color-card"><div class="color-swatch" style="background:#e8dcc8;"></div><div><div class="pt-name">bege</div><div class="en-name">beige</div></div></div>
+      </div>
+      <div class="example-box"><div class="pt">Eu tenho um carro azul e uma camisa vermelha.</div><div class="en">I have a blue car and a red shirt.</div></div>
+      <div class="tip-box"><strong>💡 Tip:</strong> Colors ending in <span class="highlight">-o</span> switch to <span class="highlight">-a</span> for feminine nouns (vermelho → vermelha, roxo → roxa). Colors ending in <span class="highlight">-e</span>, <span class="highlight">-a</span>, or a consonant (verde, rosa, azul) usually stay the same for both genders.</div>
+    `
+  },
+  {
+    id: 'food-pics', title: 'Frutas, Vegetais e Carnes', level: 'beginner',
+    desc: 'Picture-vocabulary for fruits, vegetables, meats and seafood',
+    content: `
+      <h3>Frutas, Vegetais e Carnes — Fruits, Vegetables & Meats</h3>
+      <p>A visual reference for everyday food vocabulary — great for the market, a restaurant menu, or describing what you like to eat.</p>
+
+      <div class="food-category-title">🍎 Frutas — Fruits</div>
+      <div class="food-grid">
+        <div class="food-card"><span class="emoji">🍎</span><div class="pt-name">maçã</div><div class="en-name">apple</div></div>
+        <div class="food-card"><span class="emoji">🍌</span><div class="pt-name">banana</div><div class="en-name">banana</div></div>
+        <div class="food-card"><span class="emoji">🍊</span><div class="pt-name">laranja</div><div class="en-name">orange</div></div>
+        <div class="food-card"><span class="emoji">🍇</span><div class="pt-name">uva</div><div class="en-name">grape</div></div>
+        <div class="food-card"><span class="emoji">🍓</span><div class="pt-name">morango</div><div class="en-name">strawberry</div></div>
+        <div class="food-card"><span class="emoji">🍍</span><div class="pt-name">abacaxi</div><div class="en-name">pineapple</div></div>
+        <div class="food-card"><span class="emoji">🍉</span><div class="pt-name">melancia</div><div class="en-name">watermelon</div></div>
+        <div class="food-card"><span class="emoji">🍑</span><div class="pt-name">pêssego</div><div class="en-name">peach</div></div>
+        <div class="food-card"><span class="emoji">🍒</span><div class="pt-name">cereja</div><div class="en-name">cherry</div></div>
+        <div class="food-card"><span class="emoji">🍋</span><div class="pt-name">limão</div><div class="en-name">lemon/lime</div></div>
+        <div class="food-card"><span class="emoji">🥥</span><div class="pt-name">coco</div><div class="en-name">coconut</div></div>
+        <div class="food-card"><span class="emoji">🥭</span><div class="pt-name">manga</div><div class="en-name">mango</div></div>
+        <div class="food-card"><span class="emoji">🥝</span><div class="pt-name">kiwi</div><div class="en-name">kiwi</div></div>
+        <div class="food-card"><span class="emoji">🍐</span><div class="pt-name">pera</div><div class="en-name">pear</div></div>
+        <div class="food-card"><span class="emoji">🍈</span><div class="pt-name">melão</div><div class="en-name">melon</div></div>
+        <div class="food-card"><span class="emoji">🥑</span><div class="pt-name">abacate</div><div class="en-name">avocado</div></div>
+      </div>
+
+      <div class="food-category-title">🥕 Vegetais e Legumes — Vegetables</div>
+      <div class="food-grid">
+        <div class="food-card"><span class="emoji">🍅</span><div class="pt-name">tomate</div><div class="en-name">tomato</div></div>
+        <div class="food-card"><span class="emoji">🥕</span><div class="pt-name">cenoura</div><div class="en-name">carrot</div></div>
+        <div class="food-card"><span class="emoji">🥔</span><div class="pt-name">batata</div><div class="en-name">potato</div></div>
+        <div class="food-card"><span class="emoji">🧅</span><div class="pt-name">cebola</div><div class="en-name">onion</div></div>
+        <div class="food-card"><span class="emoji">🧄</span><div class="pt-name">alho</div><div class="en-name">garlic</div></div>
+        <div class="food-card"><span class="emoji">🌽</span><div class="pt-name">milho</div><div class="en-name">corn</div></div>
+        <div class="food-card"><span class="emoji">🫑</span><div class="pt-name">pimentão</div><div class="en-name">bell pepper</div></div>
+        <div class="food-card"><span class="emoji">🥒</span><div class="pt-name">pepino</div><div class="en-name">cucumber</div></div>
+        <div class="food-card"><span class="emoji">🥦</span><div class="pt-name">brócolis</div><div class="en-name">broccoli</div></div>
+        <div class="food-card"><span class="emoji">🥬</span><div class="pt-name">alface</div><div class="en-name">lettuce</div></div>
+        <div class="food-card"><span class="emoji">🍆</span><div class="pt-name">berinjela</div><div class="en-name">eggplant</div></div>
+        <div class="food-card"><span class="emoji">🎃</span><div class="pt-name">abóbora</div><div class="en-name">pumpkin/squash</div></div>
+        <div class="food-card"><span class="emoji">🫛</span><div class="pt-name">ervilha</div><div class="en-name">pea</div></div>
+        <div class="food-card"><span class="emoji">🍠</span><div class="pt-name">batata-doce</div><div class="en-name">sweet potato</div></div>
+        <div class="food-card"><span class="emoji">🍄</span><div class="pt-name">cogumelo</div><div class="en-name">mushroom</div></div>
+      </div>
+
+      <div class="food-category-title">🍗 Carnes e Frutos do Mar — Meats & Seafood</div>
+      <div class="food-grid">
+        <div class="food-card"><span class="emoji">🥩</span><div class="pt-name">carne bovina</div><div class="en-name">beef/steak</div></div>
+        <div class="food-card"><span class="emoji">🍗</span><div class="pt-name">frango</div><div class="en-name">chicken</div></div>
+        <div class="food-card"><span class="emoji">🐖</span><div class="pt-name">carne de porco</div><div class="en-name">pork</div></div>
+        <div class="food-card"><span class="emoji">🐟</span><div class="pt-name">peixe</div><div class="en-name">fish</div></div>
+        <div class="food-card"><span class="emoji">🦃</span><div class="pt-name">peru</div><div class="en-name">turkey</div></div>
+        <div class="food-card"><span class="emoji">🐑</span><div class="pt-name">carneiro</div><div class="en-name">lamb</div></div>
+        <div class="food-card"><span class="emoji">🥓</span><div class="pt-name">bacon / toucinho</div><div class="en-name">bacon</div></div>
+        <div class="food-card"><span class="emoji">🍖</span><div class="pt-name">presunto</div><div class="en-name">ham</div></div>
+        <div class="food-card"><span class="emoji">🌭</span><div class="pt-name">linguiça</div><div class="en-name">sausage</div></div>
+        <div class="food-card"><span class="emoji">🍤</span><div class="pt-name">camarão</div><div class="en-name">shrimp</div></div>
+        <div class="food-card"><span class="emoji">🦞</span><div class="pt-name">lagosta</div><div class="en-name">lobster</div></div>
+        <div class="food-card"><span class="emoji">🦀</span><div class="pt-name">caranguejo</div><div class="en-name">crab</div></div>
+      </div>
+
+      <div class="example-box"><div class="pt">No mercado, comprei maçãs, tomates e um pouco de frango.</div><div class="en">At the market, I bought apples, tomatoes and a bit of chicken.</div></div>
+      <div class="tip-box"><strong>💡 Tip:</strong> "Carne" alone usually means "meat" in general, or specifically "beef" in everyday Brazilian speech. Say "carne de porco/frango/vaca" to be precise about which meat you mean.</div>
     `
   }
 ];
@@ -1744,6 +2144,129 @@ function showGrammarTab(tab, el) {
     el.classList.add('active');
   }
   document.getElementById('grammar-content').innerHTML = grammarContent[tab] || '';
+}
+
+// ============================
+// MEMORY GAME
+// ============================
+let memoryCategory = 'all';
+let memorySize = 8;
+let memoryCards = [];
+let memoryFlipped = [];
+let memoryMatchesFound = 0;
+let memoryMoves = 0;
+let memoryLock = false;
+
+function setMemoryCategory(cat, el) {
+  memoryCategory = cat;
+  document.querySelectorAll('#memory-category-tabs .quiz-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  startMemoryGame();
+}
+
+function setMemorySize(n, el) {
+  memorySize = n;
+  document.querySelectorAll('#memory-size-buttons .speed-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  startMemoryGame();
+}
+
+function getMemoryPool() {
+  if (memoryCategory === 'all') return aulasVocab;
+  return aulasVocab.filter(v => v.cat === memoryCategory);
+}
+
+function startMemoryGame() {
+  const pool = getMemoryPool();
+  const n = Math.min(memorySize, pool.length);
+  const chosen = shuffleArray(pool).slice(0, n);
+  let cards = [];
+  chosen.forEach((v, i) => {
+    const ptText = (v.emoji ? v.emoji + ' ' : '') + v.pt;
+    cards.push({ type: 'pt', text: ptText, pairId: i });
+    cards.push({ type: 'en', text: v.en, pairId: i });
+  });
+  memoryCards = shuffleArray(cards);
+  memoryFlipped = [];
+  memoryMatchesFound = 0;
+  memoryMoves = 0;
+  memoryLock = false;
+  document.getElementById('memory-win').style.display = 'none';
+  renderMemoryGrid();
+  updateMemoryStats();
+}
+
+function renderMemoryGrid() {
+  const grid = document.getElementById('memory-grid');
+  if (!grid) return;
+  grid.innerHTML = memoryCards.map((c, idx) => `
+    <div class="memory-card" id="memory-card-${idx}" onclick="flipMemoryCard(${idx})">
+      <div class="memory-card-inner">
+        <div class="memory-card-face memory-card-back">🍀</div>
+        <div class="memory-card-face memory-card-front">${c.text}</div>
+      </div>
+    </div>`).join('');
+}
+
+function flipMemoryCard(idx) {
+  if (memoryLock) return;
+  const cardEl = document.getElementById(`memory-card-${idx}`);
+  if (!cardEl || cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+  if (memoryFlipped.length === 2) return;
+
+  cardEl.classList.add('flipped');
+  memoryFlipped.push(idx);
+
+  if (memoryFlipped.length === 2) {
+    memoryMoves++;
+    updateMemoryStats();
+    const [i1, i2] = memoryFlipped;
+    const c1 = memoryCards[i1], c2 = memoryCards[i2];
+    const el1 = document.getElementById(`memory-card-${i1}`);
+    const el2 = document.getElementById(`memory-card-${i2}`);
+    if (c1.pairId === c2.pairId && c1.type !== c2.type) {
+      el1.classList.add('matched');
+      el2.classList.add('matched');
+      memoryFlipped = [];
+      memoryMatchesFound++;
+      updateMemoryStats();
+      if (memoryMatchesFound === memoryCards.length / 2) {
+        setTimeout(showMemoryWin, 500);
+      }
+    } else {
+      memoryLock = true;
+      el1.classList.add('mismatch');
+      el2.classList.add('mismatch');
+      setTimeout(() => {
+        el1.classList.remove('flipped', 'mismatch');
+        el2.classList.remove('flipped', 'mismatch');
+        memoryFlipped = [];
+        memoryLock = false;
+      }, 900);
+    }
+  }
+}
+
+function updateMemoryStats() {
+  const el = document.getElementById('memory-stats');
+  if (!el) return;
+  const total = memoryCards.length / 2;
+  el.innerHTML = `
+    <div>🎯 Pares encontrados: ${memoryMatchesFound}/${total}</div>
+    <div>🔄 Tentativas: ${memoryMoves}</div>`;
+}
+
+function showMemoryWin() {
+  const el = document.getElementById('memory-win');
+  el.style.display = 'block';
+  const pct = memoryMoves > 0 ? Math.round((memoryCards.length / 2 / memoryMoves) * 100) : 100;
+  el.innerHTML = `
+    <div class="quiz-score">
+      <div style="font-size:3rem;">🎉</div>
+      <div style="font-size:1.2rem; font-weight:800; color:var(--green); margin:8px 0;">Parabéns! Você encontrou todos os pares!</div>
+      <div style="color:var(--muted); margin-bottom:20px;">Tentativas: ${memoryMoves} · Eficiência: ${pct}%</div>
+      <button class="btn btn-primary" onclick="startMemoryGame()">↺ Jogar de Novo</button>
+    </div>`;
 }
 
 // Init
